@@ -1,0 +1,1889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="theme-color" content="#0a0e17"/>
+<title>FitBuddy – Your Health Companion</title>
+<link rel="manifest" href="#"/>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --teal:#4ecdc4;--teal-dark:#2d9e96;
+  --blue:#6490ff;--pink:#ff5078;--orange:#ffa03c;--purple:#c864ff;--cyan:#3cb4ff;--green:#4caf50;
+  --bg:#0a0e17;--surface:#111825;--surface2:#161e2e;--border:#1e2a3a;
+  --text:#f0f4ff;--muted:#6a7a99;
+  --card-shadow:0 2px 20px rgba(0,0,0,0.35);
+  --radius:18px;--radius-sm:12px;
+}
+body.light{
+  --bg:#f2f5fb;--surface:#ffffff;--surface2:#eaf0f8;--border:#d4dce8;
+  --text:#1a2340;--muted:#7a8aaa;--card-shadow:0 2px 16px rgba(0,0,0,0.08);
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;transition:background 0.3s,color 0.3s;}
+
+/* OFFLINE BANNER */
+#offline-banner{display:none;background:var(--orange);color:#fff;text-align:center;padding:10px;font-size:13px;font-weight:600;}
+
+/* ── TOP NAV ─────────────────────────────────────────── */
+.nav{
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  padding:0 18px;
+  display:flex;align-items:center;justify-content:space-between;
+  height:62px;position:sticky;top:0;z-index:200;
+  box-shadow:0 1px 20px rgba(0,0,0,0.18);
+}
+.nav-logo{font-family:'Rajdhani',sans-serif;font-size:24px;font-weight:700;background:linear-gradient(90deg,var(--teal),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:1px;}
+.nav-sub{font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:1px;}
+.nav-actions{display:flex;align-items:center;gap:8px;}
+.icon-btn{
+  width:40px;height:40px;border-radius:50%;
+  background:var(--surface2);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:17px;transition:all 0.2s;
+}
+.icon-btn:hover,.icon-btn:active{border-color:var(--teal);background:rgba(78,205,196,0.1);}
+.nav-avatar{
+  width:40px;height:40px;border-radius:50%;
+  background:linear-gradient(135deg,var(--teal),var(--blue));
+  display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:14px;color:#0a0e17;cursor:pointer;flex-shrink:0;
+  box-shadow:0 2px 8px rgba(78,205,196,0.3);
+}
+
+/* ── LANG BAR ────────────────────────────────────────── */
+.lang-bar{background:var(--surface2);border-bottom:1px solid var(--border);padding:8px 18px;display:flex;gap:6px;align-items:center;}
+.lang-btn{padding:5px 14px;border-radius:20px;font-size:12px;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;transition:all 0.2s;font-weight:500;}
+.lang-btn.active{background:var(--teal);color:#0a0e17;border-color:var(--teal);font-weight:700;}
+.lang-label{font-size:11px;color:var(--muted);margin-right:4px;}
+
+/* ── BOTTOM NAV ──────────────────────────────────────── */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--surface);
+  border-top:1px solid var(--border);
+  display:flex;z-index:150;
+  padding:6px 8px 10px;
+  box-shadow:0 -4px 24px rgba(0,0,0,0.22);
+}
+.bnav-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  padding:8px 4px 2px;cursor:pointer;transition:all 0.22s;
+  border:none;background:transparent;border-radius:14px;
+  position:relative;
+}
+.bnav-item.active{background:rgba(78,205,196,0.1);}
+.bnav-icon{font-size:22px;margin-bottom:3px;transition:transform 0.2s;}
+.bnav-label{font-size:10px;color:var(--muted);letter-spacing:0.2px;font-weight:500;}
+.bnav-item.active .bnav-label{color:var(--teal);font-weight:700;}
+.bnav-item.active .bnav-icon{transform:scale(1.15);filter:drop-shadow(0 0 5px var(--teal));}
+
+/* ── MAIN ────────────────────────────────────────────── */
+.main{max-width:700px;margin:0 auto;padding:18px 16px 100px;}
+.panel{display:none;}
+.panel.active{display:block;}
+
+/* ── CARDS ───────────────────────────────────────────── */
+.card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:20px;margin-bottom:14px;
+  box-shadow:var(--card-shadow);
+  transition:box-shadow 0.2s;
+}
+.card:active{box-shadow:0 1px 8px rgba(0,0,0,0.2);}
+.card-title{font-family:'Rajdhani',sans-serif;font-size:19px;font-weight:700;color:var(--text);margin-bottom:4px;display:flex;align-items:center;gap:10px;}
+.card-icon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.ci-teal{background:rgba(78,205,196,0.18);} .ci-blue{background:rgba(100,144,255,0.18);}
+.ci-pink{background:rgba(255,80,120,0.18);} .ci-orange{background:rgba(255,160,60,0.18);}
+.ci-purple{background:rgba(200,100,255,0.18);} .ci-green{background:rgba(76,175,80,0.18);}
+.card-desc{font-size:14px;color:var(--muted);margin-bottom:16px;line-height:1.6;}
+
+/* ── SECTION HEADER ──────────────────────────────────── */
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding:0 2px;}
+.section-title{font-family:'Rajdhani',sans-serif;font-size:17px;font-weight:700;color:var(--text);}
+
+/* ── FORM ────────────────────────────────────────────── */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.fg1{grid-column:span 1;} .fg2{grid-column:span 2;}
+.form-group{display:flex;flex-direction:column;gap:6px;}
+label{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.7px;}
+input,select,textarea{
+  background:var(--surface2);border:1.5px solid var(--border);
+  border-radius:10px;padding:12px 14px;
+  color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;
+  outline:none;transition:border-color 0.2s,box-shadow 0.2s;width:100%;
+  -webkit-appearance:none;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(78,205,196,0.15);}
+select option{background:var(--surface2);color:var(--text);}
+textarea{resize:vertical;min-height:80px;}
+
+/* ── BUTTONS ─────────────────────────────────────────── */
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  border:none;border-radius:12px;padding:13px 22px;
+  font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;
+  cursor:pointer;transition:all 0.2s;-webkit-tap-highlight-color:transparent;
+}
+.btn-primary{background:var(--teal);color:#0a0e17;}
+.btn-primary:hover,.btn-primary:active{background:var(--teal-dark);transform:translateY(-1px);box-shadow:0 4px 18px rgba(78,205,196,0.35);}
+.btn-secondary{background:var(--surface2);color:var(--text);border:1.5px solid var(--border);}
+.btn-secondary:hover,.btn-secondary:active{border-color:var(--teal);color:var(--teal);}
+.btn-danger{background:rgba(255,80,120,0.1);color:var(--pink);border:1.5px solid rgba(255,80,120,0.35);}
+.btn-danger:hover,.btn-danger:active{background:rgba(255,80,120,0.2);}
+.btn-full{width:100%;justify-content:center;margin-top:10px;}
+.btn-sm{padding:9px 16px;font-size:13px;border-radius:10px;}
+
+/* ── FAB (Floating Action Button) ───────────────────── */
+.fab{
+  position:fixed;bottom:80px;right:20px;z-index:140;
+  width:56px;height:56px;border-radius:50%;
+  background:linear-gradient(135deg,var(--teal),var(--blue));
+  border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;color:#0a0e17;font-weight:700;
+  box-shadow:0 4px 20px rgba(78,205,196,0.45);
+  transition:all 0.25s;
+  -webkit-tap-highlight-color:transparent;
+}
+.fab:hover,.fab:active{transform:scale(1.1) translateY(-2px);box-shadow:0 6px 26px rgba(78,205,196,0.55);}
+.fab.hidden{display:none!important;}
+
+/* ── ALERTS ──────────────────────────────────────────── */
+.alert{border-radius:12px;padding:13px 16px;font-size:14px;display:flex;align-items:flex-start;gap:10px;line-height:1.5;margin-top:12px;}
+.alert-success{background:rgba(78,205,196,0.1);border:1px solid rgba(78,205,196,0.3);color:var(--teal);}
+.alert-warning{background:rgba(255,160,60,0.1);border:1px solid rgba(255,160,60,0.3);color:var(--orange);}
+.alert-error{background:rgba(255,80,120,0.1);border:1px solid rgba(255,80,120,0.3);color:var(--pink);}
+.alert-info{background:rgba(100,144,255,0.1);border:1px solid rgba(100,144,255,0.3);color:var(--blue);}
+
+/* ── BADGE ───────────────────────────────────────────── */
+.badge{display:inline-block;padding:4px 11px;border-radius:20px;font-size:11px;font-weight:700;}
+.bg-green{background:rgba(78,205,196,0.15);color:var(--teal);border:1px solid rgba(78,205,196,0.3);}
+.bg-yellow{background:rgba(255,160,60,0.15);color:var(--orange);border:1px solid rgba(255,160,60,0.3);}
+.bg-red{background:rgba(255,80,120,0.15);color:var(--pink);border:1px solid rgba(255,80,120,0.3);}
+.bg-blue{background:rgba(100,144,255,0.15);color:var(--blue);border:1px solid rgba(100,144,255,0.3);}
+.bg-purple{background:rgba(200,100,255,0.15);color:var(--purple);border:1px solid rgba(200,100,255,0.3);}
+
+/* ── PROGRESS ────────────────────────────────────────── */
+.pbar-wrap{background:rgba(255,255,255,0.07);border-radius:8px;height:7px;overflow:hidden;margin:8px 0 2px;}
+body.light .pbar-wrap{background:rgba(0,0,0,0.08);}
+.pbar{height:100%;border-radius:8px;transition:width 0.8s ease;}
+
+/* ── MEDICINE CARD ───────────────────────────────────── */
+.med-card{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:16px;margin-bottom:10px;
+  display:flex;gap:14px;align-items:flex-start;
+  transition:border-color 0.2s;
+}
+.med-card:active{border-color:var(--teal);}
+.med-icon{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.med-name{font-size:16px;font-weight:600;color:var(--text);}
+.med-sub{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.5;}
+.med-tags{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;align-items:center;}
+.dose-dot{
+  width:32px;height:32px;border-radius:50%;
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:700;cursor:pointer;border:2px solid;
+  transition:all 0.2s;-webkit-tap-highlight-color:transparent;
+}
+.dose-dot.taken{background:var(--teal);border-color:var(--teal);color:#0a0e17;}
+.dose-dot.pending{background:transparent;border-color:var(--muted);color:var(--muted);}
+.dose-dot.missed{background:rgba(255,80,120,0.2);border-color:var(--pink);color:var(--pink);}
+
+/* ── APPOINTMENT CARD ────────────────────────────────── */
+.appt-card{
+  background:var(--surface2);border-left:4px solid var(--blue);
+  border-radius:0 var(--radius-sm) var(--radius-sm) 0;
+  padding:16px 18px;margin-bottom:10px;
+  display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;
+}
+.appt-name{font-size:15px;font-weight:700;color:var(--text);}
+.appt-sub{font-size:13px;color:var(--muted);margin-top:3px;}
+
+/* ── PROFILE ROWS ────────────────────────────────────── */
+.anon-field{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-size:14px;color:var(--muted);font-style:italic;}
+.profile-row{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid var(--border);font-size:14px;}
+.profile-row:last-child{border-bottom:none;}
+.profile-row .key{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:0.7px;}
+.profile-row .val{color:var(--text);font-weight:600;max-width:55%;text-align:right;word-break:break-word;}
+
+/* ── CHATBOT ─────────────────────────────────────────── */
+.chat-wrap{height:360px;overflow-y:auto;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;margin-bottom:12px;display:flex;flex-direction:column;gap:10px;scroll-behavior:smooth;}
+.chat-msg{max-width:82%;padding:12px 16px;border-radius:18px;font-size:14px;line-height:1.55;}
+.chat-bot{background:rgba(78,205,196,0.1);border:1px solid rgba(78,205,196,0.2);color:var(--text);align-self:flex-start;border-bottom-left-radius:4px;}
+.chat-user{background:var(--teal);color:#0a0e17;align-self:flex-end;border-bottom-right-radius:4px;font-weight:600;}
+.chat-input-row{display:flex;gap:10px;}
+.chat-input-row input{flex:1;border-radius:28px;padding:13px 18px;font-size:15px;}
+.chat-send{background:var(--teal);border:none;border-radius:50%;width:48px;height:48px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:20px;flex-shrink:0;transition:all 0.2s;}
+.chat-send:hover,.chat-send:active{background:var(--teal-dark);transform:scale(1.05);}
+.chat-quick{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
+.chat-q{padding:8px 14px;border-radius:20px;font-size:13px;cursor:pointer;background:rgba(78,205,196,0.09);border:1px solid rgba(78,205,196,0.25);color:var(--teal);transition:all 0.2s;font-family:'DM Sans',sans-serif;font-weight:500;}
+.chat-q:hover,.chat-q:active{background:rgba(78,205,196,0.2);}
+
+/* ── MEDITATION TIMER ────────────────────────────────── */
+.med-timer-ring{width:210px;height:210px;border-radius:50%;border:8px solid rgba(78,205,196,0.12);display:flex;align-items:center;justify-content:center;margin:0 auto 22px;position:relative;flex-direction:column;}
+.timer-num{font-family:'Rajdhani',sans-serif;font-size:52px;font-weight:700;color:var(--teal);line-height:1;}
+.timer-phase{font-size:14px;color:var(--muted);margin-top:6px;font-weight:500;}
+.timer-svg{position:absolute;top:-4px;left:-4px;transform:rotate(-90deg);}
+.timer-controls{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+
+/* ── DIET PLAN ───────────────────────────────────────── */
+.diet-meal{background:var(--surface2);border-radius:var(--radius-sm);padding:14px;margin-bottom:10px;}
+.diet-meal-title{font-size:13px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px;}
+.diet-item{display:flex;align-items:center;gap:10px;padding:6px 0;font-size:14px;color:var(--text);}
+.diet-dot{width:7px;height:7px;border-radius:50%;background:var(--teal);flex-shrink:0;}
+.diet-avoid{background:rgba(255,80,120,0.07);border:1px solid rgba(255,80,120,0.2);border-radius:var(--radius-sm);padding:14px;margin-top:10px;}
+
+/* ── REMINDER BANNER ─────────────────────────────────── */
+.reminder-banner{
+  background:linear-gradient(135deg,rgba(78,205,196,0.12),rgba(100,144,255,0.08));
+  border:1px solid rgba(78,205,196,0.28);
+  border-radius:var(--radius);padding:16px 18px;margin-bottom:16px;
+  display:flex;align-items:center;gap:14px;
+}
+
+/* ── TOGGLE SWITCH ───────────────────────────────────── */
+.toggle-row{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--border);}
+.toggle-row:last-child{border-bottom:none;}
+.toggle{position:relative;width:50px;height:28px;}
+.toggle input{opacity:0;width:0;height:0;}
+.slider{position:absolute;cursor:pointer;inset:0;background:var(--border);border-radius:28px;transition:0.3s;}
+.slider:before{content:'';position:absolute;width:22px;height:22px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:0.3s;box-shadow:0 1px 4px rgba(0,0,0,0.3);}
+input:checked+.slider{background:var(--teal);}
+input:checked+.slider:before{transform:translateX(22px);}
+
+/* ── CHIPS ───────────────────────────────────────────── */
+.chip{padding:9px 16px;border-radius:22px;font-size:13px;cursor:pointer;background:var(--surface2);border:1.5px solid var(--border);color:var(--muted);font-family:'DM Sans',sans-serif;transition:all 0.2s;margin:3px;font-weight:500;}
+.chip.on{background:rgba(78,205,196,0.15);border-color:var(--teal);color:var(--teal);font-weight:700;}
+.chip.red.on{background:rgba(255,80,120,0.15);border-color:var(--pink);color:var(--pink);}
+
+/* ── STAR RATING ─────────────────────────────────────── */
+.stars span{cursor:pointer;font-size:24px;transition:transform 0.15s;}
+.stars span:hover{transform:scale(1.25);}
+
+/* ── EMPTY STATE ─────────────────────────────────────── */
+.empty-state{text-align:center;padding:36px 20px;color:var(--muted);}
+.empty-state .empty-icon{font-size:48px;margin-bottom:12px;}
+.empty-state .empty-text{font-size:14px;line-height:1.6;}
+
+/* ── HIDDEN ──────────────────────────────────────────── */
+.hidden{display:none!important;}
+
+/* ── SPLASH SCREEN ─────────────────────────────────── */
+#splash{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;}
+#splash.fade-out{animation:splashFade 0.55s ease forwards;}
+@keyframes splashFade{to{opacity:0;pointer-events:none;}}
+.splash-ring{width:100px;height:100px;border-radius:50%;border:4px solid rgba(78,205,196,0.15);border-top-color:var(--teal);animation:spin 1s linear infinite;margin-bottom:30px;}
+.splash-logo{font-family:'Rajdhani',sans-serif;font-size:52px;font-weight:700;background:linear-gradient(90deg,var(--teal),var(--blue),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:2px;animation:logoPop 0.7s cubic-bezier(.175,.885,.32,1.275) both;}
+.splash-tagline{font-size:12px;color:var(--muted);letter-spacing:3px;text-transform:uppercase;margin-top:6px;animation:fadeUp 0.6s 0.3s ease both;}
+@keyframes logoPop{from{transform:scale(0.4);opacity:0;}to{transform:scale(1);opacity:1;}}
+@keyframes fadeUp{from{transform:translateY(12px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── ONBOARDING ─────────────────────────────────────── */
+#onboarding{position:fixed;inset:0;z-index:500;background:var(--bg);overflow-y:auto;}
+#onboarding.hidden{display:none!important;}
+.ob-wrap{max-width:460px;margin:0 auto;padding:30px 20px 40px;}
+.ob-step{display:none;animation:stepIn 0.4s cubic-bezier(.25,.8,.25,1) both;}
+.ob-step.active{display:block;}
+@keyframes stepIn{from{opacity:0;transform:translateX(36px);}to{opacity:1;transform:translateX(0);}}
+.ob-progress{display:flex;gap:6px;justify-content:center;margin-bottom:30px;}
+.ob-dot{width:32px;height:4px;border-radius:4px;background:var(--border);transition:all 0.35s;}
+.ob-dot.done{background:var(--teal);}
+.ob-head{font-family:'Rajdhani',sans-serif;font-size:30px;font-weight:700;color:var(--text);margin-bottom:8px;}
+.ob-desc{font-size:14px;color:var(--muted);margin-bottom:22px;line-height:1.65;}
+.ob-emoji{font-size:56px;text-align:center;margin-bottom:18px;}
+.ob-avatar-big{width:88px;height:88px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--blue));display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:#0a0e17;margin:0 auto 22px;font-family:'Rajdhani',sans-serif;transition:all 0.3s;letter-spacing:1px;}
+.ob-feature{display:flex;align-items:center;gap:14px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:10px;}
+
+/* ── PANEL TRANSITIONS ───────────────────────────────── */
+.panel{display:none;animation:panelIn 0.32s cubic-bezier(.25,.8,.25,1) both;}
+.panel.active{display:block;}
+@keyframes panelIn{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── MODAL ───────────────────────────────────────────── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.72);z-index:300;display:flex;align-items:flex-end;justify-content:center;padding:0;}
+.modal-overlay.hidden{display:none!important;}
+.modal{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:24px 24px 0 0;
+  padding:24px 20px 32px;
+  width:100%;max-width:600px;max-height:92vh;overflow-y:auto;
+  animation:modalUp 0.3s cubic-bezier(.25,.8,.25,1) both;
+}
+@keyframes modalUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+.modal-title{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;color:var(--text);margin-bottom:18px;display:flex;justify-content:space-between;align-items:center;}
+.modal-close{cursor:pointer;font-size:22px;background:var(--surface2);border:none;color:var(--muted);width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+
+@media(max-width:480px){
+  .form-grid{grid-template-columns:1fr;}
+  .fg2{grid-column:span 1;}
+  .card{padding:16px;}
+  .main{padding:14px 12px 100px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ SPLASH ══ -->
+<div id="splash">
+  <div class="splash-ring"></div>
+  <div class="splash-logo">💪 FitBuddy</div>
+  <div class="splash-tagline">Your Health Companion</div>
+</div>
+
+<!-- ══ ONBOARDING WIZARD ══ -->
+<div id="onboarding" class="hidden">
+  <div class="ob-wrap">
+    <div class="ob-progress">
+      <div class="ob-dot done" id="ob-d1"></div>
+      <div class="ob-dot" id="ob-d2"></div>
+      <div class="ob-dot" id="ob-d3"></div>
+    </div>
+
+    <!-- Step 1: Welcome -->
+    <div class="ob-step active" id="ob-step-1">
+      <div class="ob-emoji">🌿</div>
+      <div class="ob-head">Welcome to FitBuddy!</div>
+      <div class="ob-desc">Your personal health companion — medicines, appointments, diet and meditation, all in one place.</div>
+      <div class="ob-feature"><span style="font-size:28px;">💊</span><div><div style="font-weight:600;font-size:14px;color:var(--text);">Medicine Reminders</div><div style="font-size:12px;color:var(--muted);">Never miss a dose again</div></div></div>
+      <div class="ob-feature"><span style="font-size:28px;">🏥</span><div><div style="font-weight:600;font-size:14px;color:var(--text);">Doctor Appointments</div><div style="font-size:12px;color:var(--muted);">Track all your visits</div></div></div>
+      <div class="ob-feature"><span style="font-size:28px;">🥗</span><div><div style="font-weight:600;font-size:14px;color:var(--text);">Diet & Meditation</div><div style="font-size:12px;color:var(--muted);">Live a healthier lifestyle</div></div></div>
+      <button class="btn btn-primary btn-full" style="font-size:16px;padding:14px;margin-top:20px;" onclick="obNext(2)">Let's Get Started →</button>
+    </div>
+
+    <!-- Step 2: Profile Setup -->
+    <div class="ob-step" id="ob-step-2">
+      <div class="ob-avatar-big" id="ob-av">SW</div>
+      <div class="ob-head">Tell us about yourself</div>
+      <div class="ob-desc">Saved only on your device — never shared with anyone.</div>
+      <div class="form-grid" style="gap:14px;margin-bottom:22px;">
+        <div class="form-group fg2">
+          <label>Full Name *</label>
+          <input id="ob-name" placeholder="e.g. Rahul Sharma" oninput="updateObAvatar()" style="font-size:16px;padding:12px 14px;"/>
+        </div>
+        <div class="form-group">
+          <label>Age</label>
+          <input id="ob-age" type="number" placeholder="25" style="font-size:16px;padding:12px 14px;"/>
+        </div>
+        <div class="form-group">
+          <label>Blood Group</label>
+          <select id="ob-blood" style="font-size:16px;padding:12px 14px;">
+            <option value="">Select</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>O+</option><option>O-</option><option>AB+</option><option>AB-</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Gender</label>
+          <select id="ob-gender" style="font-size:16px;padding:12px 14px;">
+            <option value="">Select</option><option>Male</option><option>Female</option><option>Other</option>
+          </select>
+        </div>
+        <div class="form-group fg2">
+          <label>Mobile No.</label>
+          <input id="ob-mobile" type="tel" placeholder="98XXXXXXXX" maxlength="10" style="font-size:16px;padding:12px 14px;"/>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn btn-secondary" onclick="obNext(1)">← Back</button>
+        <button class="btn btn-primary" style="flex:1;font-size:15px;" onclick="obNext(3)">Next →</button>
+      </div>
+    </div>
+
+    <!-- Step 3: Done -->
+    <div class="ob-step" id="ob-step-3">
+      <div class="ob-emoji">🎉</div>
+      <div class="ob-head" id="ob-done-name">All Set!</div>
+      <div class="ob-desc">Your profile has been saved. Start using FitBuddy now.</div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:24px;" id="ob-summary"></div>
+      <button class="btn btn-primary btn-full" style="font-size:16px;padding:14px;" onclick="finishOnboarding()">🌿 Open App</button>
+    </div>
+  </div>
+</div>
+
+<div id="offline-banner">📵 Offline Mode — No internet connection. Your saved data is available.</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <div>
+    <div class="nav-logo">💪 FitBuddy</div>
+    <div class="nav-sub" id="nav-sub">Your Health Companion</div>
+  </div>
+  <div class="nav-actions">
+    <div class="icon-btn" onclick="toggleTheme()" title="Dark/Light Mode" id="theme-btn">🌙</div>
+    <div class="icon-btn" onclick="showPanel('chatbot')" title="Chat">💬</div>
+    <div class="nav-avatar" id="nav-av" onclick="showPanel('profile')">SW</div>
+  </div>
+</nav>
+
+<!-- LANG BAR -->
+<div class="lang-bar">
+  <span class="lang-label" id="ll">Language:</span>
+  <button class="lang-btn active" onclick="setLang('en',this)">English</button>
+  <button class="lang-btn" onclick="setLang('mr',this)">मराठी</button>
+  <button class="lang-btn" onclick="setLang('hi',this)">हिंदी</button>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- ═══ HOME ═══ -->
+  <div id="panel-home" class="panel active">
+    <!-- Reminder Banner -->
+    <div class="reminder-banner" id="rem-banner">
+      <span style="font-size:24px;">💊</span>
+      <div>
+        <div style="font-size:14px;font-weight:600;color:var(--text);" id="rem-title">Today's Medicine Reminder</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px;" id="rem-sub">3 medicines pending today</div>
+      </div>
+      <button class="btn btn-sm btn-primary" style="margin-left:auto;" onclick="showPanel('medicines')">View</button>
+    </div>
+
+    <!-- User Welcome / Greeting -->
+    <div class="card" style="background:linear-gradient(135deg,rgba(78,205,196,0.13),rgba(100,144,255,0.09));border-color:rgba(78,205,196,0.35);position:relative;overflow:hidden;">
+      <div style="position:absolute;right:-10px;top:-10px;font-size:80px;opacity:0.06;pointer-events:none;" id="greet-bg-emoji">🌅</div>
+      <div style="display:flex;gap:14px;align-items:center;">
+        <div class="nav-avatar" style="width:58px;height:58px;font-size:20px;flex-shrink:0;" id="home-av">FB</div>
+        <div style="flex:1;">
+          <div style="font-size:12px;color:var(--teal);font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px;" id="greet-time-label">Good Morning</div>
+          <div style="font-family:'Rajdhani',sans-serif;font-size:24px;font-weight:700;color:var(--text);line-height:1.1;" id="home-name">FitBuddy User! 👋</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:4px;" id="home-meta">Age: — | BMI: —</div>
+          <div style="margin-top:6px;" id="home-tags"></div>
+        </div>
+      </div>
+      <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);font-size:13px;color:var(--muted);font-style:italic;" id="greet-quote"></div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+      <div class="card" style="padding:14px;cursor:pointer;" onclick="showPanel('medicines')">
+        <div style="font-size:22px;margin-bottom:6px;">💊</div>
+        <div style="font-family:'Rajdhani',sans-serif;font-size:26px;font-weight:700;color:var(--teal);" id="qs-meds">0</div>
+        <div style="font-size:12px;color:var(--muted);" id="qs-meds-l">Medicines Today</div>
+        <div class="pbar-wrap"><div class="pbar" id="qs-mbar" style="width:0%;background:var(--teal);"></div></div>
+      </div>
+      <div class="card" style="padding:14px;cursor:pointer;" onclick="showPanel('appointments')">
+        <div style="font-size:22px;margin-bottom:6px;">🏥</div>
+        <div style="font-family:'Rajdhani',sans-serif;font-size:26px;font-weight:700;color:var(--blue);" id="qs-appts">0</div>
+        <div style="font-size:12px;color:var(--muted);" id="qs-appts-l">Upcoming Appointments</div>
+      </div>
+      <div class="card" style="padding:14px;cursor:pointer;" onclick="showPanel('meditation')">
+        <div style="font-size:22px;margin-bottom:6px;">🧘</div>
+        <div style="font-family:'Rajdhani',sans-serif;font-size:26px;font-weight:700;color:var(--purple);" id="qs-med">0</div>
+        <div style="font-size:12px;color:var(--muted);" id="qs-med-l">Min Meditated Today</div>
+      </div>
+      <div class="card" style="padding:14px;cursor:pointer;" onclick="showPanel('diet')">
+        <div style="font-size:22px;margin-bottom:6px;">🥗</div>
+        <div style="font-family:'Rajdhani',sans-serif;font-size:26px;font-weight:700;color:var(--green);">Plan</div>
+        <div style="font-size:12px;color:var(--muted);" id="qs-diet-l">View Diet Plan</div>
+      </div>
+    </div>
+
+    <!-- Next Appointment -->
+    <div class="card" id="next-appt-card">
+      <div class="card-title"><div class="card-icon ci-blue">🏥</div><span id="na-title">Next Appointment</span></div>
+      <div id="next-appt-content" style="color:var(--muted);font-size:13px;">No appointments found. Add one in the Doctor tab.</div>
+    </div>
+  </div>
+
+  <!-- ═══ MEDICINES ═══ -->
+  <div id="panel-medicines" class="panel">
+    <div class="card">
+      <div class="card-title"><div class="card-icon ci-teal">💊</div><span id="med-h">Medicine Portfolio</span></div>
+      <div class="card-desc" id="med-d">Manage all your medicines, allergies and dosages here</div>
+      <button class="btn btn-primary" onclick="openMedModal()">➕ <span id="add-med-btn">Add New Medicine</span></button>
+    </div>
+
+    <!-- Allergy Section -->
+    <div class="card">
+      <div class="card-title" style="margin-bottom:12px;"><div class="card-icon ci-pink">⚠️</div><span id="allergy-h">Allergies</span></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;" id="allergy-chips"></div>
+      <div style="display:flex;gap:8px;">
+        <input id="allergy-input" placeholder="Add allergy..." style="flex:1;"/>
+        <button class="btn btn-secondary btn-sm" onclick="addAllergy()">Add</button>
+      </div>
+    </div>
+
+    <!-- Today's Schedule -->
+    <div class="card">
+      <div class="card-title" style="margin-bottom:14px;"><div class="card-icon ci-orange">⏰</div><span id="today-sched">Today's Schedule</span></div>
+      <div id="med-schedule-list"><div style="color:var(--muted);font-size:13px;text-align:center;padding:20px;" id="no-meds-msg">No medicines added yet. Tap the button above to add one!</div></div>
+    </div>
+
+    <!-- All Medicines -->
+    <div class="card">
+      <div class="card-title" style="margin-bottom:14px;"><div class="card-icon ci-teal">📋</div><span id="all-meds-h">All Medicines</span></div>
+      <div id="all-meds-list"></div>
+    </div>
+  </div>
+
+  <!-- ═══ APPOINTMENTS ═══ -->
+  <div id="panel-appointments" class="panel">
+    <div class="card">
+      <div class="card-title"><div class="card-icon ci-blue">🏥</div><span id="appt-h">Doctor Appointments</span></div>
+      <div class="card-desc" id="appt-d">Track all your doctor appointments</div>
+      <button class="btn btn-primary" onclick="openApptModal()">➕ <span id="add-appt-btn">Add New Appointment</span></button>
+    </div>
+    <div class="card">
+      <div class="card-title" style="margin-bottom:14px;"><div class="card-icon ci-blue">📅</div><span id="upcoming-h">Upcoming Appointments</span></div>
+      <div id="appt-list"><div style="color:var(--muted);font-size:13px;text-align:center;padding:20px;" id="no-appt-msg">No appointments yet.</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="margin-bottom:14px;"><div class="card-icon ci-purple">📖</div><span id="past-h">Past Appointments</span></div>
+      <div id="past-appt-list" style="color:var(--muted);font-size:13px;">—</div>
+    </div>
+  </div>
+
+  <!-- ═══ PROFILE ═══ -->
+  <div id="panel-profile" class="panel">
+    <div class="card" style="background:linear-gradient(135deg,rgba(78,205,196,0.1),rgba(100,144,255,0.08));border-color:rgba(78,205,196,0.3);">
+      <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;">
+        <div class="nav-avatar" style="width:60px;height:60px;font-size:20px;" id="prof-av">SW</div>
+        <div>
+          <div style="font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;color:var(--text);" id="prof-display-name">—</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px;" id="prof-display-meta">—</div>
+        </div>
+        <button class="btn btn-secondary btn-sm" style="margin-left:auto;" onclick="toggleProfileEdit()">✏️ <span id="edit-prof-btn">Edit</span></button>
+      </div>
+    </div>
+
+    <!-- View Mode -->
+    <div id="profile-view" class="card">
+      <div class="card-title" style="margin-bottom:14px;"><div class="card-icon ci-teal">👤</div><span id="prof-info-h">Profile Information</span></div>
+      <div class="alert alert-info" style="margin-bottom:14px;">
+        <span>🔒</span><span id="anon-note">Your information is private — never shared with any third party.</span>
+      </div>
+      <div id="profile-rows"></div>
+    </div>
+
+    <!-- Edit Mode -->
+    <div id="profile-edit" class="card hidden">
+      <div class="card-title" style="margin-bottom:14px;"><div class="card-icon ci-teal">✏️</div><span id="edit-prof-h">Edit Profile</span></div>
+      <div class="form-grid">
+        <div class="form-group fg2"><label id="l-pname">Full Name</label><input id="p-name" placeholder="Your full name..."/></div>
+        <div class="form-group"><label id="l-page">Age</label><input id="p-age" type="number" placeholder="22"/></div>
+        <div class="form-group"><label id="l-pheight">Height (cm)</label><input id="p-height" type="number" placeholder="170"/></div>
+        <div class="form-group"><label id="l-pweight">Weight (kg)</label><input id="p-weight" type="number" step="0.5" placeholder="65"/></div>
+        <div class="form-group"><label id="l-pblood">Blood Group</label>
+          <select id="p-blood"><option value="">Select</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>O+</option><option>O-</option><option>AB+</option><option>AB-</option></select>
+        </div>
+        <div class="form-group"><label id="l-pgender">Gender</label>
+          <select id="p-gender"><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option></select>
+        </div>
+        <div class="form-group"><label id="l-pmobile">Mobile No.</label><input id="p-mobile" type="tel" placeholder="98XXXXXXXX" maxlength="10"/></div>
+        <div class="form-group"><label id="l-pemergency">Emergency Contact No.</label><input id="p-emergency" type="tel" placeholder="Emergency no." maxlength="10"/></div>
+        <div class="form-group fg2"><label id="l-pemail">Email</label><input id="p-email" type="email" placeholder="example@email.com"/></div>
+        <div class="form-group fg2"><label id="l-phistory">Medical History</label><textarea id="p-history" rows="3" placeholder="e.g. Diabetes, BP, Heart condition..."></textarea></div>
+        <div class="form-group fg2"><label id="l-pallergies">Known Allergies</label><textarea id="p-allergies-text" rows="2" placeholder="e.g. Penicillin, Dust, Peanuts..."></textarea></div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:12px;">
+        <button class="btn btn-primary" style="flex:1;" onclick="saveProfile()">💾 <span id="save-prof-btn">Save Profile</span></button>
+        <button class="btn btn-secondary" onclick="toggleProfileEdit()"><span id="cancel-btn">Cancel</span></button>
+      </div>
+    </div>
+
+    <!-- Settings -->
+    <div class="card">
+      <div class="card-title" style="margin-bottom:14px;"><div class="card-icon ci-purple">⚙️</div><span id="settings-h">Settings</span></div>
+      <div class="toggle-row">
+        <div><div style="font-size:14px;font-weight:500;" id="notif-lbl">Medicine Reminders</div><div style="font-size:12px;color:var(--muted);" id="notif-sub-lbl">Browser notifications</div></div>
+        <label class="toggle"><input type="checkbox" id="notif-toggle" onchange="toggleNotifications(this)"><span class="slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div><div style="font-size:14px;font-weight:500;" id="dark-lbl">Dark Mode</div></div>
+        <label class="toggle"><input type="checkbox" id="dark-toggle" onchange="toggleTheme()" checked><span class="slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div><div style="font-size:14px;font-weight:500;" id="anon-lbl">Anonymous Mode</div><div style="font-size:12px;color:var(--muted);" id="anon-sub">Hide personal info from display</div></div>
+        <label class="toggle"><input type="checkbox" id="anon-toggle" onchange="DB.set('anon_mode',this.checked);renderProfile()"><span class="slider"></span></label>
+      </div>
+    </div>
+
+    <!-- Danger Zone -->
+    <div class="card" style="border-color:rgba(255,80,120,0.35);background:rgba(255,80,120,0.04);">
+      <div class="card-title" style="margin-bottom:6px;color:var(--pink);"><div class="card-icon ci-pink">🗑️</div>Danger Zone</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6;">Deleting your profile will permanently remove your name, health data, medicines, appointments and all saved information. <strong style="color:var(--pink);">This action cannot be undone.</strong></div>
+      <button class="btn btn-danger btn-full" onclick="confirmDeleteProfile()" style="justify-content:center;">🗑️ &nbsp;Delete Profile &amp; Reset App</button>
+    </div>
+  </div>
+
+  <!-- ═══ DIET ═══ -->
+  <div id="panel-diet" class="panel">
+    <div class="card">
+      <div class="card-title"><div class="card-icon ci-green">🥗</div><span id="diet-h">Diet Plan</span></div>
+      <div class="card-desc" id="diet-d">Personalized diet plan based on your allergies and health condition</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+        <span class="chip on" onclick="filterDiet(this,'veg')">🥦 Vegetarian</span>
+        <span class="chip" onclick="filterDiet(this,'nonveg')">🍗 Non-Veg</span>
+        <span class="chip" onclick="filterDiet(this,'diabetic')">🩺 Diabetic Friendly</span>
+        <span class="chip" onclick="filterDiet(this,'bp')">❤️ Low BP / High BP</span>
+      </div>
+    </div>
+    <div id="diet-avoid-card" class="card hidden">
+      <div class="card-title" style="margin-bottom:10px;"><div class="card-icon ci-pink">🚫</div><span id="avoid-h">Avoid (Allergies)</span></div>
+      <div id="avoid-list"></div>
+    </div>
+    <div id="diet-plan-cards"></div>
+  </div>
+
+  <!-- ═══ MEDITATION ═══ -->
+  <div id="panel-meditation" class="panel">
+    <div class="card" style="text-align:center;">
+      <div class="card-title" style="justify-content:center;margin-bottom:4px;"><div class="card-icon ci-purple">🧘</div><span id="medit-h">Meditation Timer</span></div>
+      <div class="card-desc" id="medit-d" style="text-align:center;">Meditate daily for mental peace and focus</div>
+
+      <!-- Mode selector -->
+      <div style="display:flex;gap:6px;justify-content:center;margin-bottom:16px;flex-wrap:wrap;" id="timer-modes">
+        <button class="chip on" onclick="setTimerMode(this,'breathing')">🫁 Breathing</button>
+        <button class="chip" onclick="setTimerMode(this,'focus')">🎯 Focus</button>
+        <button class="chip" onclick="setTimerMode(this,'sleep')">😴 Sleep</button>
+        <button class="chip" onclick="setTimerMode(this,'custom')">⏱️ Custom</button>
+      </div>
+
+      <!-- Duration -->
+      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;" id="dur-btns">
+        <button class="chip on" onclick="setDuration(this,5)">5 min</button>
+        <button class="chip" onclick="setDuration(this,10)">10 min</button>
+        <button class="chip" onclick="setDuration(this,15)">15 min</button>
+        <button class="chip" onclick="setDuration(this,20)">20 min</button>
+        <button class="chip" onclick="setDuration(this,30)">30 min</button>
+      </div>
+
+      <!-- Timer Ring -->
+      <div class="med-timer-ring" id="timer-ring">
+        <svg class="timer-svg" width="208" height="208" viewBox="0 0 208 208">
+          <circle cx="104" cy="104" r="96" fill="none" stroke="rgba(78,205,196,0.12)" stroke-width="8"/>
+          <circle id="timer-arc" cx="104" cy="104" r="96" fill="none" stroke="var(--teal)" stroke-width="8"
+            stroke-linecap="round" stroke-dasharray="603" stroke-dashoffset="0" style="transition:stroke-dashoffset 1s linear;"/>
+        </svg>
+        <div class="timer-num" id="timer-display">05:00</div>
+        <div class="timer-phase" id="timer-phase">Ready</div>
+      </div>
+
+      <!-- Custom input -->
+      <div id="custom-dur-input" class="hidden" style="margin-bottom:12px;">
+        <input id="custom-min" type="number" placeholder="Minutes (1-120)" min="1" max="120" style="max-width:180px;text-align:center;"/>
+        <button class="btn btn-secondary btn-sm" style="margin-top:6px;" onclick="applyCustom()">Set</button>
+      </div>
+
+      <div class="timer-controls">
+        <button class="btn btn-primary" id="timer-start-btn" onclick="startTimer()">▶ <span id="start-lbl">Start</span></button>
+        <button class="btn btn-secondary" onclick="pauseTimer()" id="timer-pause-btn">⏸ <span id="pause-lbl">Pause</span></button>
+        <button class="btn btn-secondary" onclick="resetTimer()">↺ <span id="reset-lbl">Reset</span></button>
+      </div>
+
+      <div id="timer-guide" style="margin-top:20px;background:var(--surface2);border-radius:10px;padding:14px;text-align:left;font-size:13px;color:var(--muted);line-height:1.7;"></div>
+    </div>
+
+    <!-- Sessions log -->
+    <div class="card">
+      <div class="card-title" style="margin-bottom:12px;"><div class="card-icon ci-purple">📊</div><span id="medit-log-h">Session History</span></div>
+      <div id="medit-sessions" style="color:var(--muted);font-size:13px;">No sessions completed yet.</div>
+    </div>
+  </div>
+
+  <!-- ═══ CHATBOT ═══ -->
+  <div id="panel-chatbot" class="panel">
+    <div class="card" style="padding:0;overflow:hidden;">
+      <div style="background:linear-gradient(135deg,rgba(78,205,196,0.12),rgba(100,144,255,0.08));padding:16px 20px;border-bottom:1px solid var(--border);">
+        <div class="card-title" style="margin-bottom:2px;"><div class="card-icon ci-teal">🤖</div><span id="bot-h">FitBuddy Assistant</span></div>
+        <div style="font-size:12px;color:var(--muted);" id="bot-sub">Available for all your health questions</div>
+      </div>
+      <div style="padding:16px;">
+        <div class="chat-quick" id="quick-chips"></div>
+        <div class="chat-wrap" id="chat-messages"></div>
+        <div class="chat-input-row">
+          <input id="chat-input" placeholder="Type your question here..." onkeydown="if(event.key==='Enter')sendChat()"/>
+          <button class="chat-send" onclick="sendChat()">➤</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<!-- FLOATING ACTION BUTTON -->
+<button class="fab hidden" id="fab-btn" onclick="handleFAB()">➕</button>
+
+<!-- CUSTOM CONFIRM DIALOG -->
+<div class="modal-overlay hidden" id="confirm-modal">
+  <div class="modal" style="border-radius:24px 24px 0 0;max-width:480px;">
+    <div style="text-align:center;padding:8px 0 4px;">
+      <div style="font-size:48px;margin-bottom:12px;" id="confirm-icon">🗑️</div>
+      <div style="font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;color:var(--text);margin-bottom:8px;" id="confirm-title">Are you sure?</div>
+      <div style="font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:24px;" id="confirm-msg">This action cannot be undone.</div>
+      <div style="display:flex;gap:12px;">
+        <button class="btn btn-secondary" style="flex:1;justify-content:center;" onclick="closeConfirm()">Cancel</button>
+        <button class="btn btn-danger" style="flex:1;justify-content:center;background:var(--pink);color:#fff;border:none;" id="confirm-ok-btn" onclick="confirmOK()">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <button class="bnav-item active" onclick="showPanel('home')"><div class="bnav-icon">🏠</div><div class="bnav-label" id="bn-home">Home</div></button>
+  <button class="bnav-item" onclick="showPanel('medicines')"><div class="bnav-icon">💊</div><div class="bnav-label" id="bn-med">Medicine</div></button>
+  <button class="bnav-item" onclick="showPanel('appointments')"><div class="bnav-icon">🏥</div><div class="bnav-label" id="bn-appt">Doctor</div></button>
+  <button class="bnav-item" onclick="showPanel('diet')"><div class="bnav-icon">🥗</div><div class="bnav-label" id="bn-diet">Diet</div></button>
+  <button class="bnav-item" onclick="showPanel('meditation')"><div class="bnav-icon">🧘</div><div class="bnav-label" id="bn-medit">Meditate</div></button>
+</nav>
+
+<!-- MEDICINE MODAL -->
+<div class="modal-overlay hidden" id="med-modal">
+  <div class="modal">
+    <div class="modal-title"><span id="med-modal-h">Add Medicine</span><button class="modal-close" onclick="closeMedModal()">✕</button></div>
+    <div class="form-grid">
+      <div class="form-group fg2"><label id="l-mname">Medicine Name *</label><input id="m-name" placeholder="e.g. Paracetamol 500mg"/></div>
+      <div class="form-group"><label id="l-mtype">Type</label>
+        <select id="m-type">
+          <option value="tablet">💊 Tablet</option><option value="capsule">💉 Capsule</option>
+          <option value="syrup">🧪 Syrup</option><option value="drops">💧 Drops</option><option value="injection">🩹 Injection</option>
+        </select>
+      </div>
+      <div class="form-group"><label id="l-mdosage">Dosage (per day)</label><input id="m-dosage" type="number" min="1" max="10" value="1" placeholder="1"/></div>
+      <div class="form-group"><label id="l-mstock">Current Stock (tablets)</label><input id="m-stock" type="number" min="0" value="30" placeholder="30"/></div>
+      <div class="form-group fg2"><label id="l-mtiming">Timing</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;" id="timing-chips">
+          <span class="chip" onclick="this.classList.toggle('on')">🌅 Morning</span>
+          <span class="chip" onclick="this.classList.toggle('on')">☀️ Afternoon</span>
+          <span class="chip" onclick="this.classList.toggle('on')">🌆 Evening</span>
+          <span class="chip" onclick="this.classList.toggle('on')">🌙 Night</span>
+        </div>
+      </div>
+      <div class="form-group"><label id="l-mmeal">Meal Relation</label>
+        <select id="m-meal"><option value="before">Before Meal</option><option value="after" selected>After Meal</option><option value="with">With Meal</option><option value="any">Any Time</option></select>
+      </div>
+      <div class="form-group"><label id="l-mduration">Duration (days)</label><input id="m-duration" type="number" placeholder="7" value="30"/></div>
+      <div class="form-group fg2"><label id="l-mnotes">Notes / Doctor Instructions</label><textarea id="m-notes" rows="2" placeholder="Any special instructions..."></textarea></div>
+      <div class="form-group fg2"><label id="l-mshop">Online Shop Link (optional)</label><input id="m-shop" type="url" placeholder="https://pharmeasy.in/..."/></div>
+    </div>
+    <button class="btn btn-primary btn-full" onclick="saveMedicine()">💾 <span id="save-med-btn">Save Medicine</span></button>
+  </div>
+</div>
+
+<!-- APPOINTMENT MODAL -->
+<div class="modal-overlay hidden" id="appt-modal">
+  <div class="modal">
+    <div class="modal-title"><span id="appt-modal-h">Add Appointment</span><button class="modal-close" onclick="closeApptModal()">✕</button></div>
+    <div class="form-grid">
+      <div class="form-group fg2"><label id="l-drname">Doctor Name *</label><input id="a-name" placeholder="Dr. Sharma..."/></div>
+      <div class="form-group"><label id="l-drspec">Specialization</label>
+        <select id="a-spec"><option>General Physician</option><option>Cardiologist</option><option>Orthopedic</option><option>Dermatologist</option><option>ENT</option><option>Neurologist</option><option>Gynecologist</option><option>Ophthalmologist</option><option>Dentist</option><option>Other</option></select>
+      </div>
+      <div class="form-group"><label id="l-adate">Date *</label><input id="a-date" type="date"/></div>
+      <div class="form-group"><label id="l-atime">Time *</label><input id="a-time" type="time"/></div>
+      <div class="form-group fg2"><label id="l-ahospital">Hospital / Clinic</label><input id="a-hospital" placeholder="Hospital name..."/></div>
+      <div class="form-group fg2"><label id="l-areason">Reason for Visit</label><textarea id="a-reason" rows="2" placeholder="Reason for appointment..."></textarea></div>
+      <div class="form-group"><label id="l-afee">Fees (₹)</label><input id="a-fee" type="number" placeholder="500"/></div>
+      <div class="form-group"><label id="l-aphone">Doctor Phone</label><input id="a-phone" type="tel" placeholder="Doctor no." maxlength="10"/></div>
+    </div>
+    <button class="btn btn-primary btn-full" onclick="saveAppointment()">💾 <span id="save-appt-btn">Save Appointment</span></button>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════
+// LANGUAGE SYSTEM
+// ══════════════════════════════════════
+const LANGS = {
+  en:{
+    appSub:'Your Health Companion',langLabel:'Language:',
+    bn_home:'Home',bn_med:'Medicine',bn_appt:'Doctor',bn_diet:'Diet',bn_medit:'Meditate',
+    med_h:'Medicine Portfolio',med_d:'Manage all your medicines, allergies and dosages here',
+    add_med_btn:'Add New Medicine',allergy_h:'Allergies',today_sched:"Today's Schedule",all_meds_h:'All Medicines',
+    appt_h:'Doctor Appointments',appt_d:'Track all your doctor appointments',
+    add_appt_btn:'Add New Appointment',upcoming_h:'Upcoming Appointments',past_h:'Past Appointments',
+    prof_info_h:'Profile Information',edit_prof_btn:'Edit',save_prof_btn:'Save Profile',cancel_btn:'Cancel',
+    anon_note:'Your information is private — never shared with any third party.',
+    settings_h:'Settings',notif_lbl:'Medicine Reminders',dark_lbl:'Dark Mode',anon_lbl:'Anonymous Mode',
+    diet_h:'Diet Plan',diet_d:'Personalized diet plan based on your allergies and health condition',
+    avoid_h:'Avoid (Allergies)',medit_h:'Meditation Timer',medit_d:'Meditate daily for mental peace',
+    medit_log_h:'Session History',bot_h:'FitBuddy Assistant',bot_sub:'Available for your health questions',
+    start_lbl:'Start',pause_lbl:'Pause',reset_lbl:'Reset',
+    na_title:'Next Appointment',qs_meds_l:'Medicines Today',qs_appts_l:'Upcoming Appointments',
+    qs_med_l:'Min Meditated Today',qs_diet_l:'View Diet Plan',
+    rem_title:"Today's Medicine Reminder",
+  },
+  mr:{
+    appSub:'आरोग्य व्यवस्थापक',langLabel:'भाषा:',
+    bn_home:'होम',bn_med:'औषध',bn_appt:'डॉक्टर',bn_diet:'आहार',bn_medit:'ध्यान',
+    med_h:'औषध पोर्टफोलिओ',med_d:'तुमच्या सर्व औषधे, ॲलर्जी आणि डोस इथे व्यवस्थापित करा',
+    add_med_btn:'नवीन औषध जोडा',allergy_h:'ॲलर्जी',today_sched:'आजचे वेळापत्रक',all_meds_h:'सर्व औषधे',
+    appt_h:'डॉक्टर अपॉइंटमेंट',appt_d:'तुमच्या सर्व डॉक्टर अपॉइंटमेंट ट्रॅक करा',
+    add_appt_btn:'नवीन अपॉइंटमेंट जोडा',upcoming_h:'येणाऱ्या अपॉइंटमेंट',past_h:'जुन्या अपॉइंटमेंट',
+    prof_info_h:'प्रोफाइल माहिती',edit_prof_btn:'संपादन',save_prof_btn:'प्रोफाइल सेव्ह करा',cancel_btn:'रद्द करा',
+    anon_note:'तुमची माहिती anonymous आहे — कोणत्याही third-party ला शेअर होत नाही.',
+    settings_h:'सेटिंग्ज',notif_lbl:'औषध रिमाइंडर',dark_lbl:'डार्क मोड',anon_lbl:'Anonymous मोड',
+    diet_h:'आहार योजना',diet_d:'तुमच्या ॲलर्जी आणि आरोग्यानुसार वैयक्तिक आहार योजना',
+    avoid_h:'टाळा (ॲलर्जी)',medit_h:'ध्यान टायमर',medit_d:'मानसशांतीसाठी रोज ध्यान करा',
+    medit_log_h:'सत्र इतिहास',bot_h:'FitBuddy Assistant',bot_sub:'तुमच्या आरोग्य प्रश्नांसाठी उपलब्ध',
+    start_lbl:'सुरू करा',pause_lbl:'थांबवा',reset_lbl:'रीसेट',
+    na_title:'पुढची अपॉइंटमेंट',qs_meds_l:'आजची औषधे',qs_appts_l:'येणाऱ्या अपॉइंटमेंट',
+    qs_med_l:'आज ध्यानाचे मिनिटे',qs_diet_l:'आहार योजना पाहा',
+    rem_title:'आजची औषध रिमाइंडर',
+  },
+  hi:{
+    appSub:'स्वास्थ्य प्रबंधक',langLabel:'भाषा:',
+    bn_home:'होम',bn_med:'दवाई',bn_appt:'डॉक्टर',bn_diet:'डाइट',bn_medit:'ध्यान',
+    med_h:'दवाई पोर्टफोलियो',med_d:'अपनी सभी दवाइयाँ, एलर्जी और खुराक यहाँ प्रबंधित करें',
+    add_med_btn:'नई दवाई जोड़ें',allergy_h:'एलर्जी',today_sched:'आज का कार्यक्रम',all_meds_h:'सभी दवाइयाँ',
+    appt_h:'डॉक्टर अपॉइंटमेंट',appt_d:'अपनी सभी डॉक्टर अपॉइंटमेंट ट्रैक करें',
+    add_appt_btn:'नई अपॉइंटमेंट जोड़ें',upcoming_h:'आगामी अपॉइंटमेंट',past_h:'पुरानी अपॉइंटमेंट',
+    prof_info_h:'प्रोफाइल जानकारी',edit_prof_btn:'संपादित करें',save_prof_btn:'प्रोफाइल सेव करें',cancel_btn:'रद्द करें',
+    anon_note:'आपकी जानकारी anonymous है — किसी third-party को share नहीं होती।',
+    settings_h:'सेटिंग्स',notif_lbl:'दवाई रिमाइंडर',dark_lbl:'डार्क मोड',anon_lbl:'Anonymous मोड',
+    diet_h:'डाइट प्लान',diet_d:'आपकी एलर्जी और स्वास्थ्य के अनुसार व्यक्तिगत डाइट',
+    avoid_h:'परहेज करें (एलर्जी)',medit_h:'ध्यान टाइमर',medit_d:'मानसिक शांति के लिए रोज ध्यान करें',
+    medit_log_h:'सत्र इतिहास',bot_h:'FitBuddy Assistant',bot_sub:'आपके स्वास्थ्य प्रश्नों के लिए उपलब्ध',
+    start_lbl:'शुरू करें',pause_lbl:'रोकें',reset_lbl:'रीसेट',
+    na_title:'अगली अपॉइंटमेंट',qs_meds_l:'आज की दवाइयाँ',qs_appts_l:'आगामी अपॉइंटमेंट',
+    qs_med_l:'आज के ध्यान मिनट',qs_diet_l:'डाइट प्लान देखें',
+    rem_title:'आज की दवाई रिमाइंडर',
+  }
+};
+let curLang = localStorage.getItem('sw_lang')||'en';
+
+function setLang(lang, btn){
+  curLang = lang;
+  localStorage.setItem('sw_lang', lang);
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  applyLang();
+}
+
+function applyLang(){
+  const L = LANGS[curLang];
+  const ids = ['nav-sub','bn-home','bn-med','bn-appt','bn-diet','bn-medit',
+    'med-h','med-d','add-med-btn','allergy-h','today-sched','all-meds-h',
+    'appt-h','appt-d','add-appt-btn','upcoming-h','past-h',
+    'prof-info-h','edit-prof-btn','save-prof-btn','cancel-btn','anon-note',
+    'settings-h','notif-lbl','dark-lbl','anon-lbl',
+    'diet-h','diet-d','avoid-h','medit-h','medit-d','medit-log-h',
+    'bot-h','bot-sub','start-lbl','pause-lbl','reset-lbl',
+    'na-title','qs-meds-l','qs-appts-l','qs-med-l','qs-diet-l','rem-title'];
+  const keys = ['appSub','bn_home','bn_med','bn_appt','bn_diet','bn_medit',
+    'med_h','med_d','add_med_btn','allergy_h','today_sched','all_meds_h',
+    'appt_h','appt_d','add_appt_btn','upcoming_h','past_h',
+    'prof_info_h','edit_prof_btn','save_prof_btn','cancel_btn','anon_note',
+    'settings_h','notif_lbl','dark_lbl','anon_lbl',
+    'diet_h','diet_d','avoid_h','medit_h','medit_d','medit_log_h',
+    'bot_h','bot_sub','start_lbl','pause_lbl','reset_lbl',
+    'na_title','qs_meds_l','qs_appts_l','qs_med_l','qs_diet_l','rem_title'];
+  ids.forEach((id,i)=>{ const el=document.getElementById(id); if(el&&L[keys[i]])el.textContent=L[keys[i]]; });
+  document.getElementById('ll').textContent = L.langLabel;
+}
+
+// ══════════════════════════════════════
+// PANEL NAVIGATION
+// ══════════════════════════════════════
+function showPanel(id){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.bnav-item').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  const map={home:0,medicines:1,appointments:2,diet:3,meditation:4};
+  if(map[id]!==undefined) document.querySelectorAll('.bnav-item')[map[id]].classList.add('active');
+  if(id==='medicines'){renderMeds();renderSchedule();}
+  if(id==='appointments'){renderAppts();}
+  if(id==='profile'){renderProfile();}
+  if(id==='diet'){renderDiet();}
+  if(id==='chatbot'){initChat();}
+  if(id==='home'){updateGreeting();}
+  // FAB visibility
+  const fab=document.getElementById('fab-btn');
+  if(id==='medicines'){fab.classList.remove('hidden');fab.title='Add Medicine';}
+  else if(id==='appointments'){fab.classList.remove('hidden');fab.title='Add Appointment';}
+  else fab.classList.add('hidden');
+  window.scrollTo(0,0);
+}
+
+let _fabPanel='';
+function handleFAB(){
+  const active=document.querySelector('.panel.active');
+  if(active&&active.id==='panel-medicines') openMedModal();
+  else if(active&&active.id==='panel-appointments') openApptModal();
+}
+
+// ══════════════════════════════════════
+// THEME
+// ══════════════════════════════════════
+function toggleTheme(){
+  document.body.classList.toggle('light');
+  const isLight = document.body.classList.contains('light');
+  document.getElementById('theme-btn').textContent = isLight ? '🌙' : '☀️';
+  document.getElementById('dark-toggle').checked = !isLight;
+  localStorage.setItem('sw_theme', isLight?'light':'dark');
+}
+
+// ══════════════════════════════════════
+// STORAGE HELPERS
+// ══════════════════════════════════════
+const DB = {
+  get:(k)=>{ try{return JSON.parse(localStorage.getItem('sw_'+k)||'null');}catch{return null;} },
+  set:(k,v)=>{ try{localStorage.setItem('sw_'+k,JSON.stringify(v));}catch{} },
+  push:(k,v)=>{ const arr=DB.get(k)||[]; arr.push(v); DB.set(k,arr); },
+  del:(k,id)=>{ const arr=(DB.get(k)||[]).filter(i=>String(i.id)!==String(id)); DB.set(k,arr); }
+};
+
+// ══════════════════════════════════════
+// MEDICINES
+// ══════════════════════════════════════
+function openMedModal(){ document.getElementById('med-modal').classList.remove('hidden'); }
+function closeMedModal(){ document.getElementById('med-modal').classList.add('hidden'); }
+
+function saveMedicine(){
+  const name = document.getElementById('m-name').value.trim();
+  if(!name){ alert('Please enter the medicine name!'); return; }
+  const timings = [];
+  document.querySelectorAll('#timing-chips .chip.on').forEach(c=>timings.push(c.textContent.trim()));
+  const med = {
+    id: Date.now(),
+    name, type: document.getElementById('m-type').value,
+    dosage: parseInt(document.getElementById('m-dosage').value)||1,
+    stock: parseInt(document.getElementById('m-stock').value)||0,
+    timings, meal: document.getElementById('m-meal').value,
+    duration: parseInt(document.getElementById('m-duration').value)||30,
+    notes: document.getElementById('m-notes').value,
+    shopLink: document.getElementById('m-shop').value,
+    addedOn: new Date().toISOString(),
+    takenToday: []
+  };
+  DB.push('medicines', med);
+  closeMedModal();
+  renderMeds();
+  renderSchedule();
+  updateHomeStats();
+  scheduleReminders();
+  // Reset form
+  ['m-name','m-notes','m-shop'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('m-stock').value='30';
+  document.querySelectorAll('#timing-chips .chip').forEach(c=>c.classList.remove('on'));
+}
+
+// ══════════════════════════════════════
+// CUSTOM CONFIRM DIALOG
+// ══════════════════════════════════════
+let _confirmCallback = null;
+
+function showConfirm(icon, title, msg, btnLabel, callback){
+  document.getElementById('confirm-icon').textContent  = icon;
+  document.getElementById('confirm-title').textContent = title;
+  document.getElementById('confirm-msg').textContent   = msg;
+  document.getElementById('confirm-ok-btn').textContent= btnLabel;
+  _confirmCallback = callback;
+  document.getElementById('confirm-modal').classList.remove('hidden');
+}
+function closeConfirm(){
+  document.getElementById('confirm-modal').classList.add('hidden');
+  _confirmCallback = null;
+}
+function confirmOK(){
+  const cb = _confirmCallback;   // save FIRST
+  _confirmCallback = null;       // clear
+  document.getElementById('confirm-modal').classList.add('hidden');
+  if(cb) cb();                   // then call
+}
+
+function deleteMed(id){
+  showConfirm(
+    '💊',
+    'Delete Medicine?',
+    'This medicine will be permanently removed from your portfolio.',
+    '🗑️ Delete',
+    ()=>{
+      DB.del('medicines', id);
+      renderMeds();
+      renderSchedule();
+      updateHomeStats();
+      showToast('✅ Medicine deleted.','success');
+    }
+  );
+}
+
+function deleteAppt(id){
+  showConfirm(
+    '🏥',
+    'Delete Appointment?',
+    'This appointment will be permanently removed.',
+    '🗑️ Delete',
+    ()=>{
+      DB.del('appointments', id);
+      renderAppts();
+      updateHomeStats();
+      showToast('✅ Appointment deleted.','success');
+    }
+  );
+}
+
+function markTaken(medId, timing){
+  const meds = DB.get('medicines')||[];
+  const today = new Date().toDateString();
+  const m = meds.find(x=>x.id===medId);
+  if(!m) return;
+  if(!m.takenToday) m.takenToday=[];
+  const key = today+'_'+timing;
+  if(m.takenToday.includes(key)){ m.takenToday = m.takenToday.filter(k=>k!==key); }
+  else { m.takenToday.push(key); m.stock = Math.max(0,(m.stock||0)-1); }
+  DB.set('medicines', meds);
+  renderSchedule();
+  updateHomeStats();
+}
+
+const medIcons = {tablet:'💊',capsule:'💉',syrup:'🧪',drops:'💧',injection:'🩹'};
+
+function renderSchedule(){
+  const meds = DB.get('medicines')||[];
+  const today = new Date().toDateString();
+  const container = document.getElementById('med-schedule-list');
+  if(!meds.length){ container.innerHTML=`<div class="empty-state"><div class="empty-icon">💊</div><div class="empty-text">No medicines added yet.<br>Tap the <strong>➕</strong> button to add your first medicine.</div></div>`; return; }
+  container.innerHTML = meds.map(m=>{
+    const timings = m.timings||['Morning'];
+    const dots = timings.map(t=>{
+      const key = today+'_'+t;
+      const taken = (m.takenToday||[]).includes(key);
+      return `<span class="dose-dot ${taken?'taken':'pending'}" onclick="markTaken(${m.id},'${t}')" title="${t}">${taken?'✓':'○'}</span> <span style="font-size:11px;color:var(--muted);">${t}</span>`;
+    }).join('&nbsp;&nbsp;');
+    const stockWarn = (m.stock||0)<=3;
+    const stockZero = (m.stock||0)===0;
+    return `<div class="med-card">
+      <div class="med-icon" style="background:rgba(78,205,196,0.12);">${medIcons[m.type]||'💊'}</div>
+      <div style="flex:1;">
+        <div class="med-name">${m.name}</div>
+        <div class="med-sub">${m.dosage}x/day &nbsp;•&nbsp; ${m.meal} &nbsp;•&nbsp; Stock: <strong style="color:${stockZero?'var(--pink)':stockWarn?'var(--orange)':'var(--teal)'}">${m.stock||0}</strong></div>
+        <div class="med-tags" style="margin-top:8px;">${dots}</div>
+        ${stockZero&&m.shopLink?`<div style="margin-top:8px;"><a href="${m.shopLink}" target="_blank" style="color:var(--blue);font-size:12px;text-decoration:none;">🛒 Online Order Now →</a></div>`:''}
+        ${stockZero&&!m.shopLink?`<div style="margin-top:8px;font-size:12px;color:var(--pink);">⚠️ Out of stock! <a href="https://pharmeasy.in/search/all?name=${encodeURIComponent(m.name)}" target="_blank" style="color:var(--blue);text-decoration:none;">Check on PharmEasy →</a></div>`:''}
+        ${stockWarn&&!stockZero?`<div style="margin-top:6px;"><span class="badge bg-yellow">⚠️ Low Stock — ${m.stock} remaining</span></div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderMeds(){
+  const meds = DB.get('medicines')||[];
+  const container = document.getElementById('all-meds-list');
+  if(!meds.length){ container.innerHTML='<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">No medicines found.</div></div>'; return; }
+  container.innerHTML = meds.map(m=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);gap:10px;flex-wrap:wrap;">
+      <div style="display:flex;gap:10px;align-items:center;">
+        <span style="font-size:20px;">${medIcons[m.type]||'💊'}</span>
+        <div>
+          <div style="font-size:14px;font-weight:600;color:var(--text);">${m.name}</div>
+          <div style="font-size:11px;color:var(--muted);">${(m.timings||[]).join(', ')} &nbsp;•&nbsp; ${m.dosage}/day &nbsp;•&nbsp; ${m.stock} left</div>
+        </div>
+      </div>
+      <button class="btn btn-danger btn-sm" onclick="deleteMed(${m.id})">🗑️</button>
+    </div>`).join('');
+}
+
+// Allergies
+function renderAllergyChips(){
+  const allergies = DB.get('allergies')||[];
+  const wrap = document.getElementById('allergy-chips');
+  wrap.innerHTML = allergies.map(a=>`<span class="chip red on" style="background:rgba(255,80,120,0.12);border-color:var(--pink);color:var(--pink);">${a} <span onclick="removeAllergy('${a}')" style="cursor:pointer;margin-left:4px;">✕</span></span>`).join('');
+}
+function addAllergy(){
+  const val = document.getElementById('allergy-input').value.trim();
+  if(!val) return;
+  const allergies = DB.get('allergies')||[];
+  if(!allergies.includes(val)){ allergies.push(val); DB.set('allergies',allergies); }
+  document.getElementById('allergy-input').value='';
+  renderAllergyChips();
+}
+function removeAllergy(a){
+  const allergies = (DB.get('allergies')||[]).filter(x=>x!==a);
+  DB.set('allergies',allergies); renderAllergyChips();
+}
+
+// ══════════════════════════════════════
+// APPOINTMENTS
+// ══════════════════════════════════════
+function openApptModal(){
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('a-date').value=today;
+  document.getElementById('appt-modal').classList.remove('hidden');
+}
+function closeApptModal(){ document.getElementById('appt-modal').classList.add('hidden'); }
+
+function saveAppointment(){
+  const name = document.getElementById('a-name').value.trim();
+  const date = document.getElementById('a-date').value;
+  const time = document.getElementById('a-time').value;
+  if(!name||!date||!time){ alert('Please fill in doctor name, date and time!'); return; }
+  const appt = {
+    id:Date.now(), name, spec:document.getElementById('a-spec').value,
+    date, time, hospital:document.getElementById('a-hospital').value,
+    reason:document.getElementById('a-reason').value,
+    fee:document.getElementById('a-fee').value,
+    phone:document.getElementById('a-phone').value,
+  };
+  DB.push('appointments',appt);
+  closeApptModal();
+  renderAppts();
+  updateHomeStats();
+  ['a-name','a-hospital','a-reason','a-fee','a-phone'].forEach(id=>document.getElementById(id).value='');
+}
+
+function renderAppts(){
+  const appts = DB.get('appointments')||[];
+  const now = new Date();
+  const upcoming = appts.filter(a=>new Date(a.date+' '+a.time)>=now).sort((a,b)=>new Date(a.date)-new Date(b.date));
+  const past = appts.filter(a=>new Date(a.date+' '+a.time)<now).sort((a,b)=>new Date(b.date)-new Date(a.date));
+
+  const ul = document.getElementById('appt-list');
+  if(!upcoming.length){ ul.innerHTML='<div class="empty-state"><div class="empty-icon">🏥</div><div class="empty-text">No upcoming appointments.<br>Tap <strong>➕</strong> to schedule one.</div></div>'; }
+  else ul.innerHTML = upcoming.map(a=>`
+    <div class="appt-card">
+      <div>
+        <div class="appt-name">Dr. ${a.name} <span class="badge bg-blue" style="margin-left:6px;">${a.spec}</span></div>
+        <div class="appt-sub">📅 ${a.date} &nbsp;⏰ ${a.time} ${a.hospital?'&nbsp;•&nbsp; 🏥 '+a.hospital:''}</div>
+        ${a.reason?`<div style="font-size:12px;color:var(--muted);margin-top:4px;">📋 ${a.reason}</div>`:''}
+        ${a.fee?`<div style="font-size:12px;color:var(--muted);margin-top:2px;">💰 ₹${a.fee} ${a.phone?'&nbsp;•&nbsp; 📞 '+a.phone:''}</div>`:''}
+      </div>
+      <button class="btn btn-danger btn-sm" onclick="deleteAppt(${a.id})">🗑️</button>
+    </div>`).join('');
+
+  const pl = document.getElementById('past-appt-list');
+  if(!past.length){ pl.innerHTML='<div style="color:var(--muted);font-size:13px;">No past appointments.</div>'; }
+  else pl.innerHTML = past.slice(0,5).map(a=>`
+    <div style="padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;">
+      <span style="color:var(--text);font-weight:500;">Dr. ${a.name}</span> — ${a.date} <span style="color:var(--muted)">${a.spec}</span>
+    </div>`).join('');
+
+  // Next appt on home
+  const nextApptEl = document.getElementById('next-appt-content');
+  if(upcoming.length){
+    const n = upcoming[0];
+    const daysLeft = Math.ceil((new Date(n.date)-new Date())/(1000*60*60*24));
+    nextApptEl.innerHTML=`<div class="appt-card" style="margin:0;background:transparent;">
+      <div><div class="appt-name">Dr. ${n.name}</div>
+      <div class="appt-sub">📅 ${n.date} &nbsp;⏰ ${n.time} ${n.hospital?'&nbsp;•&nbsp; '+n.hospital:''}</div></div>
+      <span class="badge ${daysLeft<=1?'bg-red':daysLeft<=3?'bg-yellow':'bg-green'}">${daysLeft===0?'Today!':daysLeft===1?'Tomorrow':daysLeft+' days'}</span>
+    </div>`;
+  } else { nextApptEl.innerHTML='<div style="color:var(--muted);font-size:13px;">No appointments yet.</div>'; }
+}
+
+// ══════════════════════════════════════
+// PROFILE
+// ══════════════════════════════════════
+function saveProfile(){
+  const p = {
+    name:document.getElementById('p-name').value,
+    age:document.getElementById('p-age').value,
+    height:document.getElementById('p-height').value,
+    weight:document.getElementById('p-weight').value,
+    blood:document.getElementById('p-blood').value,
+    gender:document.getElementById('p-gender').value,
+    mobile:document.getElementById('p-mobile').value,
+    emergency:document.getElementById('p-emergency').value,
+    email:document.getElementById('p-email').value,
+    history:document.getElementById('p-history').value,
+    allergies:document.getElementById('p-allergies-text').value,
+  };
+  DB.set('profile',p);
+  toggleProfileEdit();
+  renderProfile();
+  updateHomeStats();
+}
+
+function toggleProfileEdit(){
+  document.getElementById('profile-view').classList.toggle('hidden');
+  document.getElementById('profile-edit').classList.toggle('hidden');
+  const p = DB.get('profile')||{};
+  if(!document.getElementById('profile-edit').classList.contains('hidden')){
+    ['name','age','height','weight','blood','gender','mobile','emergency','email','history'].forEach(k=>{
+      const el=document.getElementById('p-'+k); if(el) el.value=p[k]||'';
+    });
+    document.getElementById('p-allergies-text').value=p.allergies||'';
+  }
+}
+
+function updateGreeting(){
+  const p = DB.get('profile')||{};
+  const name = (p.name||'').trim();
+  const hour = new Date().getHours();
+  let label, emoji, quote;
+  if(hour>=5 && hour<12){
+    label='Good Morning'; emoji='🌅';
+    const quotes=['Start your day healthy! 💪','Morning is the best time for a healthy routine.','A healthy morning sets the tone for the whole day.'];
+    quote = quotes[Math.floor(Math.random()*quotes.length)];
+  } else if(hour>=12 && hour<17){
+    label='Good Afternoon'; emoji='☀️';
+    const quotes=['Stay hydrated and keep going! 💧','Take a short walk after lunch — your body will thank you.','Midday check-in: Have you taken your medicines? 💊'];
+    quote = quotes[Math.floor(Math.random()*quotes.length)];
+  } else if(hour>=17 && hour<21){
+    label='Good Evening'; emoji='🌆';
+    const quotes=['Time to relax and recharge. 🧘','Evening walk is great for digestion and stress relief.','Don\'t forget your evening medicines! 💊'];
+    quote = quotes[Math.floor(Math.random()*quotes.length)];
+  } else {
+    label='Good Night'; emoji='🌙';
+    const quotes=['Rest well — your body heals while you sleep. 😴','Try the Sleep Meditation before bed tonight.','Screens off, lights dim — time to wind down. 🌙'];
+    quote = quotes[Math.floor(Math.random()*quotes.length)];
+  }
+  const el = document.getElementById('greet-time-label');
+  const nameEl = document.getElementById('home-name');
+  const bgEl = document.getElementById('greet-bg-emoji');
+  const quoteEl = document.getElementById('greet-quote');
+  if(el) el.textContent = label;
+  if(bgEl) bgEl.textContent = emoji;
+  if(quoteEl) quoteEl.textContent = quote;
+  if(nameEl){
+    const anon = document.getElementById('anon-toggle') && document.getElementById('anon-toggle').checked;
+    nameEl.textContent = anon ? 'FitBuddy User! 👋' : (name ? name + '! 👋' : 'FitBuddy User! 👋');
+  }
+}
+
+function confirmDeleteProfile(){
+  const p = DB.get('profile')||{};
+  const name = p.name ? `"${p.name}"` : 'your profile';
+  showConfirm(
+    '⚠️',
+    'Delete Profile & Reset App?',
+    `This will permanently delete ${name}, all medicines, appointments and settings. This CANNOT be undone.`,
+    '🗑️ Delete Everything',
+    ()=> doDeleteProfile()
+  );
+}
+
+function doDeleteProfile(){
+  // Wipe all stored data
+  const knownKeys=['profile','medicines','appointments','allergies','notif','anon_mode','ob_done','medit_sessions','theme','lang','sw_lang','sw_theme'];
+  knownKeys.forEach(k=>{ try{localStorage.removeItem(k);}catch(e){} try{localStorage.removeItem('sw_'+k);}catch(e){} });
+  try{ const rem=[]; for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith('sw_'))rem.push(k);} rem.forEach(k=>localStorage.removeItem(k)); }catch(e){}
+  try{ localStorage.clear(); }catch(e){}
+
+  // Reset in-memory state
+  if(_remInterval){clearInterval(_remInterval);_remInterval=null;}
+  chatInit=false; curObStep=1; meditMinutes=0;
+
+  // Reset toggles
+  document.getElementById('notif-toggle').checked=false;
+  document.getElementById('anon-toggle').checked=false;
+  document.getElementById('dark-toggle').checked=true;
+  document.body.classList.remove('light');
+  document.getElementById('theme-btn').textContent='🌙';
+
+  // Clear all lists
+  ['med-schedule-list','all-meds-list','appt-list','past-appt-list','allergy-chips','profile-rows','medit-sessions','chat-messages','home-tags'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.innerHTML='';
+  });
+  document.getElementById('next-appt-content').textContent='No appointments found. Add one in the Doctor tab.';
+  document.getElementById('qs-meds').textContent='0';
+  document.getElementById('qs-appts').textContent='0';
+  document.getElementById('qs-med').textContent='0';
+  document.getElementById('qs-mbar').style.width='0%';
+  document.getElementById('nav-av').textContent='FB';
+  document.getElementById('home-av').textContent='FB';
+  document.getElementById('rem-sub').textContent='0 medicine(s) pending today';
+
+  // Reset onboarding to step 1
+  document.querySelectorAll('.ob-step').forEach(s=>s.classList.remove('active'));
+  document.getElementById('ob-step-1').classList.add('active');
+  [1,2,3].forEach(i=>document.getElementById('ob-d'+i).classList.toggle('done',i===1));
+  ['ob-name','ob-age','ob-blood','ob-gender'].forEach(id=>{ try{document.getElementById(id).value='';}catch(e){} });
+  document.getElementById('ob-av').textContent='FB';
+
+  // Show onboarding
+  document.getElementById('onboarding').classList.remove('hidden');
+  showToast('✅ Profile deleted successfully!','success');
+}
+function maskEmail(e){ if(!e||!e.includes('@')) return '—'; const [u,d]=e.split('@'); return u.slice(0,2)+'***@'+d; }
+
+function renderProfile(){
+  const p = DB.get('profile')||{};
+  const anon = document.getElementById('anon-toggle').checked;
+  const name = p.name||'—';
+  const initials = name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2)||'SW';
+  document.getElementById('prof-av').textContent=initials;
+  document.getElementById('nav-av').textContent=initials;
+  document.getElementById('home-av').textContent=initials;
+  document.getElementById('prof-display-name').textContent = anon ? '****** ******* (Anonymous)' : (name||'—');
+  const bmi = p.height&&p.weight ? (p.weight/((p.height/100)**2)).toFixed(1) : '—';
+  document.getElementById('prof-display-meta').textContent = `Age: ${p.age||'—'} | BMI: ${bmi} | Blood: ${p.blood||'—'}`;
+  document.getElementById('home-meta').textContent = `Age: ${p.age||'—'} | BMI: ${bmi}`;
+  updateGreeting();
+
+  const rows = [
+    ['👤 Name', anon?'Anonymous':name],
+    ['🎂 Age', p.age||'—'],
+    ['📏 Height', p.height?p.height+' cm':'—'],
+    ['⚖️ Weight', p.weight?p.weight+' kg':'—'],
+    ['🩸 Blood Group', p.blood||'—'],
+    ['⚧ Gender', p.gender||'—'],
+    ['📱 Mobile', anon?maskPhone(p.mobile):(p.mobile||'—')],
+    ['🆘 Emergency Contact', anon?maskPhone(p.emergency):(p.emergency||'—')],
+    ['📧 Email', anon?maskEmail(p.email):(p.email||'—')],
+    ['📋 Medical History', p.history||'—'],
+    ['⚠️ Known Allergies', p.allergies||'—'],
+  ];
+  document.getElementById('profile-rows').innerHTML = rows.map(([k,v])=>`
+    <div class="profile-row"><span class="key">${k}</span><span class="val" style="max-width:55%;text-align:right;word-break:break-word;">${v}</span></div>`).join('');
+
+  const tags = document.getElementById('home-tags');
+  if(p.blood) tags.innerHTML = `<span class="badge bg-red">🩸 ${p.blood}</span>`;
+  if(p.history) tags.innerHTML += ` <span class="badge bg-yellow">📋 History</span>`;
+}
+
+// ══════════════════════════════════════
+// HOME STATS
+// ══════════════════════════════════════
+function updateHomeStats(){
+  const meds = DB.get('medicines')||[];
+  const appts = (DB.get('appointments')||[]).filter(a=>new Date(a.date)>=new Date()).length;
+  const todayMedCount = meds.length;
+  const today = new Date().toDateString();
+  let takenCount = 0;
+  meds.forEach(m=>{ if(m.takenToday)(m.takenToday||[]).forEach(k=>{ if(k.startsWith(today)) takenCount++; }); });
+  document.getElementById('qs-meds').textContent = todayMedCount;
+  document.getElementById('qs-appts').textContent = appts;
+  const pct = todayMedCount>0?Math.round((takenCount/todayMedCount)*100):0;
+  document.getElementById('qs-mbar').style.width = pct+'%';
+
+  // reminder banner
+  const pending = meds.reduce((s,m)=>s+(m.timings||[]).length,0) - takenCount;
+  document.getElementById('rem-sub').textContent = `${pending} medicine(s) pending today`;
+}
+
+// ══════════════════════════════════════
+// NOTIFICATIONS / REMINDERS  (polling system)
+// ══════════════════════════════════════
+const TIMING_HOURS = {
+  '🌅 Morning':7,'☀️ Afternoon':13,'🌆 Evening':18,'🌙 Night':21,
+  'Morning':7,'Afternoon':13,'Evening':18,'Night':21
+};
+
+function firedKey(k){ return DB.get('fired_'+k); }
+function markFired(k){ DB.set('fired_'+k,true); }
+
+function sendNotif(title,body,icon='💊'){
+  if(!('Notification' in window)||Notification.permission!=='granted') return;
+  try{
+    new Notification(title,{
+      body, vibrate:[200,100,200], tag:title+body,
+      icon:`data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">${icon}</text></svg>`
+    });
+    playAlarm();
+  }catch(e){}
+}
+
+function checkAndFireReminders(){
+  if(!DB.get('notif')||Notification.permission!=='granted') return;
+  const now=new Date(), today=now.toISOString().split('T')[0];
+  const hhmm=now.getHours()*60+now.getMinutes();
+
+  // Medicine reminders
+  (DB.get('medicines')||[]).forEach(m=>{
+    (m.timings||[]).forEach(t=>{
+      const hr=TIMING_HOURS[t]; if(hr===undefined) return;
+      const tMin=hr*60;
+      if(hhmm>=tMin && hhmm<=tMin+1){
+        const key=`med_${m.id}_${t}_${today}`;
+        if(!firedKey(key)){
+          markFired(key);
+          const taken=(m.takenToday||[]).includes(new Date().toDateString()+'_'+t);
+          if(!taken) sendNotif('💊 FitBuddy – Medicine Reminder',`Time to take ${m.name}! (${t})`,medIcons[m.type]||'💊');
+        }
+      }
+    });
+  });
+
+  // Appointment reminders
+  (DB.get('appointments')||[]).forEach(a=>{
+    if(!a.date||!a.time) return;
+    const apptDate=new Date(a.date+'T'+a.time);
+    if(isNaN(apptDate)) return;
+
+    // Day before at 9 AM
+    const dayBefore=new Date(apptDate); dayBefore.setDate(dayBefore.getDate()-1); dayBefore.setHours(9,0,0,0);
+    if(today===dayBefore.toISOString().split('T')[0]&&hhmm>=540&&hhmm<=541){
+      const key=`appt_${a.id}_dayBefore`;
+      if(!firedKey(key)){markFired(key);sendNotif('🏥 FitBuddy – Appointment Tomorrow',`Dr. ${a.name} at ${a.time} tomorrow. Get ready!`,'🏥');}
+    }
+    // Morning of at 7 AM
+    if(today===a.date&&hhmm>=420&&hhmm<=421){
+      const key=`appt_${a.id}_morning`;
+      if(!firedKey(key)){markFired(key);sendNotif('🏥 FitBuddy – Appointment Today!',`Dr. ${a.name} at ${a.time} today!${a.hospital?' 📍 '+a.hospital:''}`,'🏥');}
+    }
+    // 1 hour before
+    const ob=new Date(apptDate.getTime()-3600000);
+    if(today===ob.toISOString().split('T')[0]){
+      const obMin=ob.getHours()*60+ob.getMinutes();
+      if(hhmm>=obMin&&hhmm<=obMin+1){
+        const key=`appt_${a.id}_1hr`;
+        if(!firedKey(key)){markFired(key);sendNotif('⏰ FitBuddy – 1 Hour Left!',`Appointment with Dr. ${a.name} is in 1 hour! (${a.time})`,'⏰');}
+      }
+    }
+  });
+}
+
+let _remInterval=null;
+function scheduleReminders(){
+  if(_remInterval) clearInterval(_remInterval);
+  if(!DB.get('notif')||!('Notification' in window)||Notification.permission!=='granted') return;
+  checkAndFireReminders();
+  _remInterval=setInterval(checkAndFireReminders,30000);
+}
+
+function toggleNotifications(checkbox){
+  if(checkbox.checked){
+    if(!('Notification' in window)){alert('Notifications are not supported in your browser.');checkbox.checked=false;return;}
+    Notification.requestPermission().then(p=>{
+      if(p==='granted'){DB.set('notif',true);scheduleReminders();showToast('🔔 Notifications enabled! Medicine & Appointment reminders are active.','success');}
+      else{checkbox.checked=false;showToast('⚠️ Permission denied. Please allow notifications in browser settings.','warning');}
+    });
+  } else {
+    DB.set('notif',false);
+    if(_remInterval){clearInterval(_remInterval);_remInterval=null;}
+    showToast('🔕 Notifications disabled.','info');
+  }
+}
+
+function showToast(msg,type='info'){
+  let t=document.getElementById('sw-toast');
+  if(!t){t=document.createElement('div');t.id='sw-toast';t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:9999;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:600;max-width:90vw;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.4);transition:opacity 0.4s;pointer-events:none;';document.body.appendChild(t);}
+  const c={success:'background:#4ecdc4;color:#0a0e17;',warning:'background:#ffa03c;color:#0a0e17;',info:'background:#6490ff;color:#fff;',error:'background:#ff5078;color:#fff;'};
+  t.style.cssText+=c[type]||c.info;t.textContent=msg;t.style.opacity='1';
+  clearTimeout(t._t);t._t=setTimeout(()=>{t.style.opacity='0';},3500);
+}
+
+// ══════════════════════════════════════
+// ONBOARDING
+// ══════════════════════════════════════
+let curObStep=1;
+
+function updateObAvatar(){
+  const n=(document.getElementById('ob-name').value||'').trim();
+  document.getElementById('ob-av').textContent=n.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2)||'SW';
+}
+
+function obNext(step){
+  if(step===3){
+    const name=(document.getElementById('ob-name').value||'').trim();
+    if(!name){document.getElementById('ob-name').focus();document.getElementById('ob-name').style.borderColor='var(--pink)';return;}
+    document.getElementById('ob-name').style.borderColor='';
+    const p={name,age:document.getElementById('ob-age').value,blood:document.getElementById('ob-blood').value,gender:document.getElementById('ob-gender').value,mobile:document.getElementById('ob-mobile').value,height:'',weight:'',emergency:'',email:'',history:'',allergies:''};
+    DB.set('profile',p);
+    const initials=name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2)||'SW';
+    document.getElementById('ob-done-name').textContent=`Welcome, ${name.split(' ')[0]}! 🎉`;
+    document.getElementById('ob-summary').innerHTML=`<div style="display:flex;align-items:center;gap:16px;margin-bottom:12px;"><div class="nav-avatar" style="width:58px;height:58px;font-size:20px;">${initials}</div><div><div style="font-size:17px;font-weight:700;color:var(--text);">${name}</div><div style="font-size:12px;color:var(--muted);">Age: ${p.age||'—'} &nbsp;|&nbsp; Blood: ${p.blood||'—'} &nbsp;|&nbsp; ${p.gender||'—'}</div></div></div><div style="font-size:12px;color:var(--muted);">You can edit your profile anytime from the Profile tab.</div>`;
+  }
+  const cur=document.getElementById('ob-step-'+curObStep);
+  cur.style.animation='none'; cur.style.opacity='0'; cur.style.transform='translateX(-36px)';
+  setTimeout(()=>{cur.classList.remove('active');cur.style.animation='';cur.style.opacity='';cur.style.transform='';curObStep=step;const nx=document.getElementById('ob-step-'+step);nx.classList.add('active');[1,2,3].forEach(i=>document.getElementById('ob-d'+i).classList.toggle('done',i<=step));},280);
+}
+
+function finishOnboarding(){
+  DB.set('ob_done',true);
+  document.getElementById('onboarding').classList.add('hidden');
+  bootApp();
+}
+
+// ══════════════════════════════════════
+// INIT
+// ══════════════════════════════════════
+function bootApp(){
+  const savedTheme=localStorage.getItem('sw_theme');
+  if(savedTheme==='light'){document.body.classList.add('light');document.getElementById('theme-btn').textContent='🌙';document.getElementById('dark-toggle').checked=false;}
+
+  const savedLang=localStorage.getItem('sw_lang')||'en';
+  curLang=savedLang;
+  document.querySelectorAll('.lang-btn').forEach(b=>{if(b.textContent.trim()===(savedLang==='en'?'English':savedLang==='hi'?'हिंदी':'मराठी'))b.classList.add('active');else b.classList.remove('active');});
+  applyLang();
+
+  const anonSaved=DB.get('anon_mode');
+  if(anonSaved) document.getElementById('anon-toggle').checked=true;
+
+  if(DB.get('notif')){
+    document.getElementById('notif-toggle').checked=true;
+    if('Notification' in window&&Notification.permission==='granted') scheduleReminders();
+    else if('Notification' in window&&Notification.permission==='default') Notification.requestPermission().then(p=>{if(p==='granted')scheduleReminders();});
+  }
+
+  renderProfile();
+  renderAllergyChips();
+  updateHomeStats();
+  renderAppts();
+  renderMeditSessions();
+  renderDiet();
+  updateGreeting();
+  document.getElementById('timer-guide').innerHTML=GUIDES.breathing.replace(/\n/g,'<br/>');
+  updateTimerDisplay();
+}
+
+window.onload=function(){
+  setTimeout(()=>{
+    const splash=document.getElementById('splash');
+    splash.classList.add('fade-out');
+    setTimeout(()=>{
+      splash.style.display='none';
+      if(!DB.get('ob_done')) document.getElementById('onboarding').classList.remove('hidden');
+      else bootApp();
+    },550);
+  },1800);
+};
+
+// Alarm sound
+function playAlarm(){
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    [523,659,784,1047].forEach((freq,i)=>{
+      const osc=ctx.createOscillator(),gain=ctx.createGain();
+      osc.connect(gain);gain.connect(ctx.destination);
+      osc.frequency.value=freq;gain.gain.setValueAtTime(0.3,ctx.currentTime+i*0.15);
+      gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+i*0.15+0.3);
+      osc.start(ctx.currentTime+i*0.15);osc.stop(ctx.currentTime+i*0.15+0.3);
+    });
+  }catch(e){}
+}
+
+// ══════════════════════════════════════
+// DIET PLAN
+// ══════════════════════════════════════
+const DIET_PLANS = {
+  veg:{
+    morning:[{item:'Warm lemon water',note:'Roz subah'},{item:'Oats + banana',note:'Fiber rich'},{item:'Green tea',note:'Antioxidants'}],
+    lunch:[{item:'Brown rice + dal + sabzi',note:'Balanced meal'},{item:'Salad (cucumber, tomato)',note:'Vitamins'},{item:'Buttermilk (chaas)',note:'Probiotic'}],
+    evening:[{item:'Fruits (apple/papaya)',note:'Natural sugar'},{item:'Handful of nuts',note:'Healthy fats'}],
+    dinner:[{item:'Roti + sabzi',note:'Light meal'},{item:'Moong dal soup',note:'Protein'},{item:'Haldi milk',note:'Before sleep'}],
+    avoid:['Maida products','Excess sugar','Fried food','Soda drinks']
+  },
+  nonveg:{
+    morning:[{item:'Eggs (boiled/omelette)',note:'High protein'},{item:'Whole wheat bread',note:'Complex carbs'},{item:'Orange juice',note:'Vitamin C'}],
+    lunch:[{item:'Chicken/Fish curry + rice',note:'Lean protein'},{item:'Curd / raita',note:'Probiotic'},{item:'Mixed salad',note:'Micronutrients'}],
+    evening:[{item:'Protein shake',note:'Muscle recovery'},{item:'Banana',note:'Energy'}],
+    dinner:[{item:'Grilled fish / chicken',note:'Low fat'},{item:'Steamed vegetables',note:'Fiber'},{item:'Dal soup',note:'Protein'}],
+    avoid:['Red meat daily','Processed meat','Deep fried items','Late night meals']
+  },
+  diabetic:{
+    morning:[{item:'Methi seeds water',note:'Blood sugar control'},{item:'Daliya / oats',note:'Low GI'},{item:'Almonds (5-6)',note:'Healthy fats'}],
+    lunch:[{item:'Jowar/bajra roti',note:'Low GI grains'},{item:'Green vegetables',note:'Fiber'},{item:'Sprouts salad',note:'Protein & fiber'}],
+    evening:[{item:'Cucumber + carrots',note:'Low calorie snack'},{item:'Chaas (no sugar)',note:'Probiotic'}],
+    dinner:[{item:'Small portion brown rice',note:'Low GI'},{item:'Dal + sabzi',note:'Balanced'},{item:'Bitter gourd (karela) juice',note:'Sugar control'}],
+    avoid:['White rice (large portion)','Sugar & sweets','Fruit juices','White bread','Potatoes']
+  },
+  bp:{
+    morning:[{item:'Banana + oats',note:'Potassium rich'},{item:'Low sodium breakfast',note:'BP control'},{item:'Hibiscus tea',note:'Natural BP reducer'}],
+    lunch:[{item:'DASH diet meal',note:'Low sodium'},{item:'Leafy greens',note:'Magnesium'},{item:'Flaxseeds in food',note:'Omega-3'}],
+    evening:[{item:'Pomegranate juice',note:'Heart health'},{item:'Walnuts',note:'Omega-3'}],
+    dinner:[{item:'Boiled vegetables',note:'Low sodium'},{item:'Garlic in food',note:'Natural BP reducer'},{item:'Light dal',note:'Protein'}],
+    avoid:['Salt / pickles','Processed food','Caffeine excess','Alcohol','Fatty meat']
+  }
+};
+
+let activeDietFilter = 'veg';
+function filterDiet(el, type){
+  document.querySelectorAll('#panel-diet .chip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  activeDietFilter = type;
+  renderDiet();
+}
+
+function renderDiet(){
+  const plan = DIET_PLANS[activeDietFilter]||DIET_PLANS.veg;
+  const allergies = DB.get('allergies')||[];
+  const avoidCard = document.getElementById('diet-avoid-card');
+  const avoidList = document.getElementById('avoid-list');
+
+  if(allergies.length){
+    avoidCard.classList.remove('hidden');
+    avoidList.innerHTML = allergies.map(a=>`<span class="badge bg-red" style="margin:3px;">${a}</span>`).join('') +
+      `<div style="font-size:12px;color:var(--muted);margin-top:8px;">Avoid these items in your daily diet!</div>`;
+  } else avoidCard.classList.add('hidden');
+
+  const mealIcons = {morning:'🌅',lunch:'☀️',evening:'🌆',dinner:'🌙'};
+  const mealNames = {morning:'Morning Breakfast',lunch:'Afternoon Lunch',evening:'Evening Snack',dinner:'Night Dinner'};
+  const sections = ['morning','lunch','evening','dinner'];
+  document.getElementById('diet-plan-cards').innerHTML = sections.map(s=>`
+    <div class="card">
+      <div class="card-title" style="margin-bottom:12px;"><span style="font-size:22px;">${mealIcons[s]}</span>&nbsp;${mealNames[s]}</div>
+      <div class="diet-meal" style="background:transparent;padding:0;">
+        ${plan[s].map(item=>`<div class="diet-item"><div class="diet-dot"></div><div><strong>${item.item}</strong> <span style="color:var(--muted);font-size:12px;">— ${item.note}</span></div></div>`).join('')}
+      </div>
+    </div>`).join('') +
+    `<div class="card diet-avoid">
+      <div class="card-title" style="margin-bottom:10px;color:var(--pink);"><span>🚫</span> Foods to Avoid</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;">${plan.avoid.map(a=>`<span class="badge bg-red">${a}</span>`).join('')}</div>
+    </div>`;
+}
+
+// ══════════════════════════════════════
+// MEDITATION TIMER
+// ══════════════════════════════════════
+let timerDuration=300, timerRemain=300, timerInterval=null, timerRunning=false;
+let timerMode='breathing', meditMinutes=0;
+const totalCircumference = 2*Math.PI*96;
+
+const GUIDES = {
+  breathing:'🫁 4-7-8 Breathing:\n• Inhale for 4 seconds\n• Hold for 7 seconds\n• Exhale for 8 seconds\n\nGreat for calming the mind and reducing stress.',
+  focus:'🎯 Focus Meditation:\nFocus on one thing. Be aware of thoughts that arise but don\'t follow them. Sit in stillness and observe.',
+  sleep:'😴 Sleep Meditation:\nAfter lying down, do deep breathing. Relax each part of your body one by one. Let your mind drift into empty space.',
+  custom:'⏱️ Custom Timer:\nSet the duration as you like. Sit and meditate on anything — music, visualization, or simply breathe.'
+};
+
+function setTimerMode(el, mode){
+  document.querySelectorAll('#timer-modes .chip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  timerMode = mode;
+  document.getElementById('custom-dur-input').classList.toggle('hidden', mode!=='custom');
+  document.getElementById('timer-guide').innerHTML = (GUIDES[mode]||'').replace(/\n/g,'<br/>');
+  resetTimer();
+}
+
+function setDuration(el, min){
+  document.querySelectorAll('#dur-btns .chip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  timerDuration = min*60;
+  timerRemain = timerDuration;
+  updateTimerDisplay();
+  updateTimerArc();
+}
+
+function applyCustom(){
+  const v = parseInt(document.getElementById('custom-min').value)||5;
+  timerDuration = Math.min(120,Math.max(1,v))*60;
+  timerRemain = timerDuration;
+  updateTimerDisplay();
+  updateTimerArc();
+}
+
+function updateTimerDisplay(){
+  const m=Math.floor(timerRemain/60), s=timerRemain%60;
+  document.getElementById('timer-display').textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+
+function updateTimerArc(){
+  const pct = timerRemain/timerDuration;
+  const offset = totalCircumference*(1-pct);
+  document.getElementById('timer-arc').style.strokeDashoffset = offset;
+  const phases = {breathing:['Inhale 🫁','Hold 💨','Exhale 😮‍💨'],focus:['Focus 🎯','Observe 👁️','Return 🔄'],sleep:['Relax 😴','Breathe 🌬️','Release 🌙'],custom:['Meditating 🧘','Breathe 🌬️','Focus 🎯']};
+  const ps = phases[timerMode]||['Meditating 🧘'];
+  const phaseIdx = Math.floor(((timerDuration-timerRemain)%15)/5)%ps.length;
+  document.getElementById('timer-phase').textContent = ps[phaseIdx];
+}
+
+function startTimer(){
+  if(timerRunning) return;
+  timerRunning=true;
+  timerInterval = setInterval(()=>{
+    timerRemain--;
+    updateTimerDisplay();
+    updateTimerArc();
+    if(timerRemain<=0){
+      clearInterval(timerInterval); timerRunning=false;
+      playAlarm();
+      document.getElementById('timer-phase').textContent='✅ Complete!';
+      // Log session
+      const mins = Math.round(timerDuration/60);
+      meditMinutes += mins;
+      document.getElementById('qs-med').textContent = meditMinutes;
+      const sessions = DB.get('medit_sessions')||[];
+      sessions.unshift({date:new Date().toLocaleDateString('mr-IN'),mode:timerMode,mins,ts:Date.now()});
+      DB.set('medit_sessions',sessions);
+      renderMeditSessions();
+      if(Notification.permission==='granted') new Notification('🧘 FitBuddy',{body:`${mins} minute meditation complete! Great work! 🎉`});
+    }
+  },1000);
+}
+
+function pauseTimer(){
+  if(timerRunning){ clearInterval(timerInterval); timerRunning=false; document.getElementById('timer-phase').textContent='⏸ Paused'; }
+  else if(timerRemain>0){ startTimer(); }
+}
+
+function resetTimer(){
+  clearInterval(timerInterval); timerRunning=false;
+  timerRemain=timerDuration;
+  updateTimerDisplay();
+  document.getElementById('timer-arc').style.strokeDashoffset='0';
+  document.getElementById('timer-phase').textContent='Ready';
+}
+
+function renderMeditSessions(){
+  const sessions = DB.get('medit_sessions')||[];
+  const el = document.getElementById('medit-sessions');
+  if(!sessions.length){ el.innerHTML='<div style="color:var(--muted);font-size:13px;">No sessions completed yet.</div>'; return; }
+  el.innerHTML = sessions.slice(0,7).map(s=>`
+    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;">
+      <span style="color:var(--text);">${s.date} — ${s.mode}</span>
+      <span class="badge bg-purple">${s.mins} min</span>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════════
+// CHATBOT
+// ══════════════════════════════════════
+const BOT_KNOWLEDGE = {
+  'medicine|tablet|pill|dose|drug|capsule|syrup|drops|injection|medication':[
+    '💊 If you missed a dose, take it as soon as you remember — but never take a double dose.',
+    '💊 When your medicine stock is running low, a warning will appear on the dashboard. You can reorder on PharmEasy.',
+    '💊 If your medicine says "Before Meal", take it 30 minutes before eating for best results.',
+    '💊 Always store medicines in a cool, dry place away from sunlight and children.',
+    '💊 Never stop a prescribed medicine without consulting your doctor first.'
+  ],
+  'doctor|appointment|visit|clinic|hospital|specialist|checkup|consult':[
+    '🏥 To add a new appointment, go to the "Doctor" tab and tap the ➕ button.',
+    '🏥 Your upcoming appointments are always visible on the Home screen.',
+    '🏥 You will receive a notification 1 day before, the morning of, and 1 hour before every appointment.',
+    '🏥 Always carry your previous prescriptions and reports when visiting a doctor.',
+    '🏥 Regular health checkups every 6 months are recommended even if you feel fine.'
+  ],
+  'diet|food|eat|meal|nutrition|eating|breakfast|lunch|dinner|calories|weight':[
+    '🥗 The Diet tab has Vegetarian, Non-Veg, Diabetic-friendly and BP-friendly meal plans.',
+    '🥗 Drink warm lemon water every morning at 7 AM — it boosts metabolism and aids digestion.',
+    '🥗 Avoid processed foods, excessive sugar, and fried items for better health.',
+    '🥗 Eat smaller meals every 3-4 hours instead of 2-3 large meals — it stabilises energy.',
+    '🥗 Include more fibre-rich foods like oats, fruits, and vegetables in your daily diet.'
+  ],
+  'meditation|stress|anxiety|tension|calm|relax|breathe|breathing|mental|mind|peace':[
+    '🧘 Start with just 10 minutes of meditation daily. Try the 4-7-8 Breathing technique in the Meditation tab.',
+    '🧘 For instant stress relief: go to the Meditation tab, select "Breathing" mode and do a 5 minute session.',
+    '🧘 Deep breathing for even 2 minutes can significantly lower your heart rate and reduce anxiety.',
+    '🧘 Meditation has been shown to improve focus, reduce blood pressure and improve sleep quality.',
+    '🧘 Try the "Focus" mode in the Meditation tab when you need to concentrate on work or studies.'
+  ],
+  'sleep|tired|fatigue|rest|insomnia|wake|night|nap|drowsy|exhausted':[
+    '😴 For better sleep: be in bed by 10 PM and put your phone away at least 1 hour before sleeping.',
+    '😴 The Meditation tab has a "Sleep" mode — try a 20-30 minute session at 9-10 PM.',
+    '😴 Poor sleep can raise BMI, weaken immunity, and negatively affect heart health.',
+    '😴 Avoid caffeine (tea, coffee) after 6 PM if you have trouble sleeping.',
+    '😴 Keep your sleep and wake times consistent — even on weekends — for best results.'
+  ],
+  'water|hydration|drink|thirst|dehydrated|fluid':[
+    '💧 Aim to drink 2.5–3 litres of water every day for optimal hydration.',
+    '💧 Drink 2 glasses of water immediately after waking up — it jumpstarts metabolism and flushes toxins.',
+    '💧 Drink extra water within 30 minutes after exercise or any physical activity.',
+    '💧 Signs of dehydration: dark urine, dry lips, headache, and fatigue. Drink water right away.',
+    '💧 Carry a water bottle everywhere — it is the easiest way to stay hydrated throughout the day.'
+  ],
+  'heart|bp|blood pressure|dizziness|pressure|cardiac|hypertension|cholesterol':[
+    '❤️ For healthy BP: reduce salt intake, walk for 30 minutes daily, and manage stress.',
+    '❤️ The Diet tab has a "Low BP / High BP" friendly meal plan — check it out.',
+    '❤️ If you feel dizzy: sit or lie down immediately, drink water, and consult a doctor if it persists.',
+    '❤️ Regular exercise, no smoking, and low-salt diet are the three best things for heart health.',
+    '❤️ Check your BP at least once a month, especially if you have a family history of hypertension.'
+  ],
+  'sugar|diabetes|diabetic|glucose|insulin|blood sugar|sweet':[
+    '🩺 A Diabetic-friendly meal plan is available in the Diet tab. Focus on low-GI foods.',
+    '🩺 Drink fenugreek (methi) seed water on an empty stomach every morning — it helps control blood sugar.',
+    '🩺 Completely avoid junk food, white rice in large portions, sugary drinks, and refined flour.',
+    '🩺 Exercise for at least 30 minutes daily — it significantly improves insulin sensitivity.',
+    '🩺 Monitor your blood sugar levels regularly and keep a log to share with your doctor.'
+  ],
+  'allergy|allergic|itch|rash|reaction|sensitivity|intolerance':[
+    '⚠️ You can add your allergies in the Medicine Portfolio tab so the app tracks them for you.',
+    '⚠️ Always save your known allergies in your Profile — they are critical in emergencies.',
+    '⚠️ If you develop a new or severe allergic reaction, see a doctor immediately.',
+    '⚠️ Common food allergens: peanuts, shellfish, dairy, gluten, and eggs. Know yours.',
+    '⚠️ Always read ingredient labels when trying new packaged foods if you have food allergies.'
+  ],
+  'emergency|urgent|help|sos|danger|critical|accident|attack':[
+    '🚨 In any emergency, call 112 immediately! Do not delay.',
+    '🚨 Save your emergency contact number in the Profile tab so it is always accessible.',
+    '🚨 Heart attack warning signs: chest pain, left arm pain, sweating, nausea — rush to hospital immediately!',
+    '🚨 Stroke signs (FAST): Face drooping, Arm weakness, Speech difficulty, Time to call 112!',
+    '🚨 Keep a list of your medicines, allergies and blood group saved in your Profile for emergencies.'
+  ],
+  'bmi|weight|height|fat|obesity|overweight|underweight|body':[
+    '⚖️ BMI is calculated as weight (kg) ÷ height² (m). A healthy BMI is between 18.5 and 24.9.',
+    '⚖️ Update your height and weight in the Profile tab to track your BMI.',
+    '⚖️ Even losing 5-10% of body weight can significantly improve blood pressure and blood sugar.',
+    '⚖️ Combine a balanced diet with 30 minutes of daily exercise for healthy weight management.'
+  ],
+  'exercise|gym|workout|fitness|walk|run|yoga|sport|active':[
+    '🏃 Aim for at least 150 minutes of moderate exercise per week — that is just 30 minutes a day.',
+    '🏃 A brisk 30-minute walk daily is one of the most effective and easiest forms of exercise.',
+    '🏃 Yoga combines flexibility, strength and breathing — great for overall health and stress.',
+    '🏃 Drink water before, during and after exercise to stay hydrated and perform better.',
+    '🏃 Always warm up for 5 minutes before exercise and cool down for 5 minutes after.'
+  ],
+  'stock|remaining|left|refill|reorder|pharmacy|pharmeasy|buy|order':[
+    '🛒 When medicine stock is critically low (≤3), you will see a red warning on the Medicine tab.',
+    '🛒 You can add a pharmacy link when adding a medicine — tap it to reorder in one click.',
+    '🛒 PharmEasy, Netmeds and 1mg offer home delivery — great for regular medicines.',
+    '🛒 Set a calendar reminder to refill medicines 5 days before they run out.'
+  ],
+  default:[
+    '👋 Hi! I am FitBuddy Assistant. Ask me about medicines, appointments, diet, meditation, sleep, hydration or any health topic!',
+    '🌿 I can help with medicine reminders, diet tips, appointment scheduling, stress relief and much more. What do you need?',
+    '😊 Feel free to ask me any health question — type something like "diet tips", "reduce stress", "medicine reminder" and I will help!'
+  ]
+};
+
+const QUICK_QUESTIONS = {
+  en:['💊 Medicine tips','🥗 Diet suggestion','🧘 Reduce stress','💧 Hydration reminder','❤️ Heart health','😴 Better sleep'],
+  hi:['💊 दवाई याद दिलाओ','🥗 आज का खाना','🧘 तनाव कम करें','💧 पानी पीना याद है?'],
+  mr:['💊 Medicine reminder','🥗 Diet tips','🧘 Stress relief','💧 Water reminder']
+};
+
+let chatInit = false;
+function initChat(){
+  if(chatInit) return; chatInit=true;
+  const msgs = document.getElementById('chat-messages');
+  const greets = {
+    en:'👋 Hello! I am FitBuddy Assistant. Ask me anything about your health — medicines, diet, sleep, stress and more! 😊',
+    hi:'नमस्ते! मैं स्वास्थ्य Assistant हूँ। अपने health के बारे में कोई भी सवाल पूछें! 😊',
+    mr:'नमस्कार! मी स्वास्थ्य Assistant आहे. तुमच्या health बद्दल कोणताही प्रश्न विचारा! 😊'
+  };
+  msgs.innerHTML=`<div class="chat-msg chat-bot">${greets[curLang]||greets.en}</div>`;
+  renderQuickChips();
+}
+
+function renderQuickChips(){
+  const qs = QUICK_QUESTIONS[curLang]||QUICK_QUESTIONS.en;
+  document.getElementById('quick-chips').innerHTML = qs.map(q=>`<button class="chat-q" onclick="sendQuick('${q}')">${q}</button>`).join('');
+}
+
+function sendQuick(q){ document.getElementById('chat-input').value=q; sendChat(); }
+
+function sendChat(){
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if(!msg) return;
+  input.value='';
+  const msgs = document.getElementById('chat-messages');
+  msgs.innerHTML += `<div class="chat-user chat-msg">${msg}</div>`;
+  msgs.scrollTop=msgs.scrollHeight;
+  setTimeout(()=>{
+    const reply = getBotReply(msg.toLowerCase());
+    msgs.innerHTML += `<div class="chat-msg chat-bot">${reply}</div>`;
+    msgs.scrollTop=msgs.scrollHeight;
+  },600);
+}
+
+function getBotReply(msg){
+  // Match keywords
+  for(const [keys,replies] of Object.entries(BOT_KNOWLEDGE)){
+    if(keys==='default') continue;
+    if(keys.split('|').some(k=>msg.includes(k))){
+      return replies[Math.floor(Math.random()*replies.length)];
+    }
+  }
+  // Profile/medicine context queries
+  const p = DB.get('profile')||{};
+  if(msg.includes('name')||msg.includes('who am i')||msg.includes('my name'))
+    return p.name ? `👤 Your name is <strong>${p.name}</strong>. You can update your profile anytime in the Profile tab.` : '👤 I don\'t know your name yet! Please fill in your Profile tab.';
+  const meds = DB.get('medicines')||[];
+  if(msg.includes('stock')||msg.includes('how many medicine')||msg.includes('my medicine'))
+    return meds.length ? `💊 You have <strong>${meds.length}</strong> medicine(s) in your portfolio. Go to the Medicine tab to view them.` : '💊 No medicines added yet. Go to the Medicine tab to add your first one!';
+  const appts = (DB.get('appointments')||[]).filter(a=>new Date(a.date)>=new Date());
+  if(msg.includes('appointment')||msg.includes('doctor')||msg.includes('upcoming'))
+    return appts.length ? `🏥 You have <strong>${appts.length}</strong> upcoming appointment(s). Check the Doctor tab for details.` : '🏥 No upcoming appointments. Go to the Doctor tab to add one.';
+  return BOT_KNOWLEDGE.default[Math.floor(Math.random()*BOT_KNOWLEDGE.default.length)];
+}
+
+// ══════════════════════════════════════
+// OFFLINE DETECTION
+// ══════════════════════════════════════
+function checkOnline(){
+  document.getElementById('offline-banner').style.display = navigator.onLine?'none':'block';
+}
+window.addEventListener('online',checkOnline);
+window.addEventListener('offline',checkOnline);
+checkOnline();
+
+
+</script>
+</body>
+</html>
